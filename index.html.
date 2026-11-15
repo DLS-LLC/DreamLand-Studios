@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DreamLand Studios</title>
+<style>
+:root{--bg:#f6f7fb;--card:#ffffff;--text:#1b1f2a;--muted:#6a7183;--line:#e3e6ef;--accent:#5b4bdb;--ok:#1f9d55;--bad:#d64545;--warn:#b86e00}
+@media (prefers-color-scheme:dark){:root{--bg:#12141c;--card:#1b1e2a;--text:#eceef5;--muted:#9aa1b5;--line:#2b3042;--accent:#8f82ff;--ok:#4cc380;--bad:#ff7a7a;--warn:#e5a94a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:16px}
+h1{margin:8px 0 0;font-size:24px}
+h2{margin:20px 0 10px;font-size:18px}
+.sub{margin:2px 0 12px;color:var(--muted);font-size:14px}
+.banner{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--muted)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:14px 0 6px;-webkit-overflow-scrolling:touch}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:999px;padding:8px 14px;font-size:14px;cursor:pointer}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}
+@media (min-width:560px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat b{display:block;font-size:26px}
+.stat span{color:var(--muted);font-size:13px}
+.video{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+.vtitle{font-weight:600}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0;font-size:13px;color:var(--muted)}
+.tag{border:1px solid var(--line);border-radius:6px;padding:1px 7px}
+.kids{color:var(--warn);border-color:var(--warn)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:8px 0}
+.bar div{height:100%;background:var(--accent)}
+.btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+button.act{flex:1 1 120px;border:0;border-radius:10px;padding:12px;font-size:15px;font-weight:600;color:#fff;cursor:pointer}
+button.yes{background:var(--ok)}
+button.no{background:var(--bad)}
+button.undo{background:var(--muted)}
+.st-review{color:var(--warn)}
+.st-approved{color:var(--ok)}
+.st-rejected{color:var(--bad)}
+.foot{margin:20px 0;text-align:center;font-size:13px;color:var(--muted)}
+.link{background:none;border:0;color:var(--accent);font-size:13px;text-decoration:underline;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>DreamLand Studios</h1>
+  <p class="sub">Studio dashboard &middot; prototype v0.1</p>
+  <div class="banner">Demo mode: sample data only. Nothing here is connected to YouTube, and nothing can be published from this page.</div>
+  <div class="chips" id="chips"></div>
+  <div class="stats" id="stats"></div>
+  <h2 id="listTitle">All channels</h2>
+  <div id="list"></div>
+  <p class="foot"><button class="link" id="reset" type="button">Reset demo</button></p>
+</div>
+<script>
+(function () {
+  "use strict";
+
+  var STAGES = ["Idea", "Script", "Images", "Animation", "Voice & SFX", "Edit", "Package", "Approval"];
+
+  var CHANNELS = [
+    { id: "bb", name: "Backyard Bandits" },
+    { id: "rk", name: "REKVRY365" },
+    { id: "ua", name: "The Unknown Archives" },
+    { id: "bc", name: "The Biblical Chronicles" },
+    { id: "eh", name: "Everyday Heros", kids: true },
+    { id: "dm", name: "Diner Mayhem" },
+    { id: "tp", name: "Trash Panda TV" }
+  ];
+
+  // Sample data only. Stage is a position in STAGES (0 = Idea, 7 = Approval).
+  var VIDEOS = [
+    { id: 1, ch: "bb", title: "Sample: The Great Birdfeeder Heist", stage: 7 },
+    { id: 2, ch: "bb", title: "Sample: Midnight Sprinkler Escape", stage: 7 },
+    { id: 3, ch: "bb", title: "Sample: Fence Line Getaway", stage: 3 },
+    { id: 4, ch: "rk", title: "Sample: Morning Routine Reset", stage: 5 },
+    { id: 5, ch: "ua", title: "Sample: The Lighthouse Logbook", stage: 1 },
+    { id: 6, ch: "bc", title: "Sample: A Story From the Wilderness", stage: 2 },
+    { id: 7, ch: "eh", title: "Sample: Helping Hands Day", stage: 7 },
+    { id: 8, ch: "dm", title: "Sample: The Soup Special Disaster", stage: 4 },
+    { id: 9, ch: "tp", title: "Sample: Dumpster Dive Olympics", stage: 0 }
+  ];
+
+  var KEY = "dreamland_demo_v1";
+  var decisions = {};
+  var selected = "all";
+
+  try { decisions = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { decisions = {}; }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(decisions)); } catch (e) {} }
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) { n.className = cls; }
+    if (text !== undefined) { n.textContent = text; }
+    return n;
+  }
+
+  function channel(id) {
+    for (var i = 0; i < CHANNELS.length; i++) { if (CHANNELS[i].id === id) { return CHANNELS[i]; } }
+    return { id: id, name: id };
+  }
+
+  function status(v) {
+    if (decisions[v.id]) { return decisions[v.id]; }
+    return v.stage === STAGES.length - 1 ? "review" : "working";
+  }
+
+  function visible() {
+    return VIDEOS.filter(function (v) { return selected === "all" || v.ch === selected; });
+  }
+
+  function decide(id, d) {
+    if (d) { decisions[id] = d; } else { delete decisions[id]; }
+    save();
+    render();
+  }
+
+  function renderChips() {
+    var box = document.getElementById("chips");
+    box.textContent = "";
+    [{ id: "all", name: "All" }].concat(CHANNELS).forEach(function (c) {
+      var b = el("button", "chip" + (c.id === selected ? " on" : ""), c.name);
+      b.setAttribute("type", "button");
+      b.addEventListener("click", function () { selected = c.id; render(); });
+      box.appendChild(b);
+    });
+  }
+
+  function renderStats() {
+    var n = { review: 0, working: 0, approved: 0, rejected: 0 };
+    visible().forEach(function (v) { n[status(v)]++; });
+    var box = document.getElementById("stats");
+    box.textContent = "";
+    [["Awaiting approval", n.review], ["In production", n.working], ["Approved", n.approved], ["Rejected", n.rejected]].forEach(function (s) {
+      var card = el("div", "stat");
+      card.appendChild(el("b", "", String(s[1])));
+      card.appendChild(el("span", "", s[0]));
+      box.appendChild(card);
+    });
+  }
+
+  function renderList() {
+    var box = document.getElementById("list");
+    box.textContent = "";
+    document.getElementById("listTitle").textContent = selected === "all" ? "All channels" : channel(selected).name;
+    var items = visible();
+    if (!items.length) { box.appendChild(el("p", "sub", "No videos here yet.")); return; }
+
+    items.forEach(function (v) {
+      var st = status(v);
+      var ch = channel(v.ch);
+      var card = el("div", "video");
+      card.appendChild(el("div", "vtitle", v.title));
+
+      var meta = el("div", "meta");
+      meta.appendChild(el("span", "tag", ch.name));
+      if (ch.kids) { meta.appendChild(el("span", "tag kids", "Made for kids: extra rules apply")); }
+      meta.appendChild(el("span", "", "Stage " + (v.stage + 1) + " of " + STAGES.length + ": " + STAGES[v.stage]));
+      card.appendChild(meta);
+
+      var bar = el("div", "bar");
+      var fill = el("div");
+      fill.style.width = Math.round(((v.stage + 1) / STAGES.length) * 100) + "%";
+      bar.appendChild(fill);
+      card.appendChild(bar);
+
+      if (st === "review") {
+        card.appendChild(el("div", "st-review", "Waiting for your approval"));
+        var btns = el("div", "btns");
+        var yes = el("button", "act yes", "Approve");
+        yes.setAttribute("type", "button");
+        yes.addEventListener("click", function () { decide(v.id, "approved"); });
+        var no = el("button", "act no", "Reject");
+        no.setAttribute("type", "button");
+        no.addEventListener("click", function () { decide(v.id, "rejected"); });
+        btns.appendChild(yes);
+        btns.appendChild(no);
+        card.appendChild(btns);
+      } else if (st === "approved" || st === "rejected") {
+        card.appendChild(el("div", "st-" + st, st === "approved" ? "Approved (demo only, nothing was published)" : "Rejected"));
+        var row = el("div", "btns");
+        var undo = el("button", "act undo", "Undo");
+        undo.setAttribute("type", "button");
+        undo.addEventListener("click", function () { decide(v.id, null); });
+        row.appendChild(undo);
+        card.appendChild(row);
+      } else {
+        card.appendChild(el("div", "meta", "In production"));
+      }
+      box.appendChild(card);
+    });
+  }
+
+  function render() { renderChips(); renderStats(); renderList(); }
+
+  document.getElementById("reset").addEventListener("click", function () { decisions = {}; save(); render(); });
+  render();
+})();
+</script>
+</body>
+</html>
