@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DreamLand Studios v0.3 (test)</title>
+<link rel="icon" href="data:,">
+<style>
+:root{--bg:#f6f7fb;--card:#ffffff;--text:#1b1f2a;--muted:#6a7183;--line:#e3e6ef;--accent:#5b4bdb;--ok:#1f9d55;--bad:#d64545;--warn:#b86e00}
+@media (prefers-color-scheme:dark){:root{--bg:#12141c;--card:#1b1e2a;--text:#eceef5;--muted:#9aa1b5;--line:#2b3042;--accent:#8f82ff;--ok:#4cc380;--bad:#ff7a7a;--warn:#e5a94a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:820px;margin:0 auto;padding:16px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));padding-bottom:max(60px,env(safe-area-inset-bottom))}
+h1{margin:8px 0 0;font-size:24px}
+h2{margin:20px 0 10px;font-size:19px}
+h3{margin:0;font-size:16px}
+.sub{margin:2px 0 10px;color:var(--muted);font-size:14px}
+.hint{margin:4px 0 8px;color:var(--muted);font-size:13px}
+ul.list{margin:6px 0;padding-left:20px;font-size:14px;color:var(--muted)}
+ul.list li{margin:4px 0}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+.banner{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--muted)}
+.banner+.banner{margin-top:8px}
+.banner.bad{border-left-color:var(--bad)}
+.banner.test{border-left-color:var(--accent)}
+.banner b{color:var(--text)}
+.manual{background:var(--bg);border:1px dashed var(--accent);border-radius:10px;padding:8px 10px;font-size:13px;color:var(--muted);margin:8px 0 4px}
+.manual b{color:var(--accent)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:14px 0 6px;-webkit-overflow-scrolling:touch}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:999px;padding:8px 14px;font-size:14px;cursor:pointer;font-family:inherit}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:8px}
+@media (min-width:560px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat b{display:block;font-size:26px}
+.stat span{color:var(--muted);font-size:13px}
+.video,.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.panel>summary{cursor:pointer;list-style:none;display:block}
+.panel>summary::-webkit-details-marker{display:none}
+.panel>summary h3::before{content:"\25B8\00a0\00a0"}
+.panel[open]>summary h3::before{content:"\25BE\00a0\00a0"}
+.vtitle{font-weight:600}
+.desc{color:var(--muted);font-size:14px;margin-top:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0;font-size:13px;color:var(--muted)}
+.tag{border:1px solid var(--line);border-radius:6px;padding:1px 7px}
+.kids{color:var(--warn);border-color:var(--warn)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:8px 0}
+.bar div{height:100%;background:var(--accent)}
+.btns{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:10px;padding:10px 14px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn.on,.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn.small{padding:6px 10px;font-size:13px}
+button.act{flex:1 1 120px;border:0;border-radius:10px;padding:12px;font-size:15px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit}
+button.yes{background:var(--ok)}
+button.no{background:var(--bad)}
+button.undo{background:var(--muted)}
+.st-review{color:var(--warn)}
+.st-approved{color:var(--ok)}
+.st-rejected{color:var(--bad)}
+.field{margin-top:12px}
+.field label{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
+input[type=text],select,textarea{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:10px;padding:10px 12px;font-family:inherit;font-size:16px}
+textarea{min-height:90px;resize:vertical}
+textarea.script{min-height:340px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;line-height:1.5}
+textarea.prompt{min-height:240px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.45}
+.steps{display:flex;flex-wrap:wrap;gap:6px}
+.step{border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:8px;padding:8px 10px;font-size:13px;cursor:pointer;font-family:inherit}
+.step.done{border-color:var(--accent)}
+.step.cur{background:var(--accent);border-color:var(--accent);color:#fff}
+.scene{border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:12px;margin-top:12px}
+.scenehead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.scenehead .btns{margin-top:0}
+.savestat{font-size:13px;color:var(--muted);margin:2px 0 8px}
+.jump{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}
+.linkbox{margin-top:8px;font-size:14px}
+.linkbox a{color:var(--accent);font-weight:600}
+.check{display:flex;gap:10px;align-items:flex-start;margin:8px 0;font-size:15px;cursor:pointer}
+.check input{width:22px;height:22px;flex:0 0 22px;margin:0}
+.check.auto{cursor:default;color:var(--muted)}
+.wfrow{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.wficon{width:26px;height:26px;flex:0 0 26px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--muted)}
+.wficon.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.wficon.part{background:var(--warn);border-color:var(--warn);color:#fff}
+.wficon.bad{background:var(--bad);border-color:var(--bad);color:#fff}
+.wfbody{flex:1 1 auto;min-width:0}
+.wfname{font-weight:600}
+.wfbody .hint{margin:2px 0 0}
+.pick{border:1px solid var(--line);border-radius:10px;padding:4px 12px;margin-top:6px}
+.found{margin:6px 0;padding-left:20px;font-size:14px}
+#toast{position:fixed;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translateX(-50%);max-width:92vw;background:var(--text);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:10}
+#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>DreamLand Studios</h1>
+  <p class="sub">Studio dashboard &middot; prototype v0.3 (test page) &middot; manual production platform</p>
+  <nav class="nav" id="nav"></nav>
+  <div class="banner test"><b>TEST PAGE (v0.3). </b>This page keeps its own separate copy of your data. Nothing you do here changes your live v0.2 dashboard.</div>
+  <div class="banner"><b>Manual platform. </b>Nothing here runs AI, connects to YouTube, or publishes anything. The helpers only build text for you to copy.</div>
+  <div class="banner" id="banner-storage"></div>
+  <main id="app"></main>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- Fixed lists ---------- */
+  var STAGES = ["Idea", "Script", "Images", "Animation", "Voice & SFX", "Editing", "Packaging", "Approval"];
+  var APPROVAL = STAGES.length - 1;
+
+  var CHANNELS = [
+    { id: "bb", name: "Backyard Bandits" },
+    { id: "rk", name: "REKVRY365" },
+    { id: "ua", name: "The Unknown Archives" },
+    { id: "bc", name: "The Biblical Chronicles" },
+    { id: "eh", name: "Everyday Heros", kids: true },
+    { id: "dm", name: "Diner Mayhem" },
+    { id: "tp", name: "Trash Panda TV" }
+  ];
+
+  var SAMPLES = [
+    { id: "s1", ch: "bb", title: "Sample: The Great Birdfeeder Heist", stage: 7 },
+    { id: "s2", ch: "bb", title: "Sample: Midnight Sprinkler Escape", stage: 7 },
+    { id: "s3", ch: "bb", title: "Sample: Fence Line Getaway", stage: 3 },
+    { id: "s4", ch: "rk", title: "Sample: Morning Routine Reset", stage: 5 },
+    { id: "s5", ch: "ua", title: "Sample: The Lighthouse Logbook", stage: 1 },
+    { id: "s6", ch: "bc", title: "Sample: A Story From the Wilderness", stage: 2 },
+    { id: "s7", ch: "eh", title: "Sample: Helping Hands Day", stage: 7 },
+    { id: "s8", ch: "dm", title: "Sample: The Soup Special Disaster", stage: 4 },
+    { id: "s9", ch: "tp", title: "Sample: Dumpster Dive Olympics", stage: 0 }
+  ];
+
+  var TONES = ["Funny and mischievous", "Playful and silly", "Suspenseful", "Mysterious and eerie", "Heartwarming", "Educational and curious", "Dramatic and emotional", "Reverent and reflective", "Upbeat and energetic", "Calm and cozy", "Gentle and kid-friendly", "Custom (describe it in the extra instructions)"];
+  var DURATIONS = [["30", "About 30 seconds"], ["45", "About 45 seconds"], ["60", "About 1 minute"], ["90", "About 90 seconds"], ["180", "About 3 minutes"], ["300", "About 5 minutes"], ["480", "About 8 minutes"], ["600", "About 10 minutes"]];
+  var SCENE_COUNTS = ["auto", "4", "6", "8", "10", "12", "15", "20"];
+
+  // Safety notes that are added to the requests for these channels. Edit here if they do not fit.
+  var GUARDRAILS = {
+    eh: "This channel is made for children. Keep everything age-appropriate, gentle, positive and safe: no scary, violent or dangerous behavior that kids could copy, no insults, no real brands, and never ask children for personal information or to visit links.",
+    ua: "This channel explores mysteries and unexplained stories. Present anything unproven as legend, theory or speculation, never as established fact, and do not invent sources, quotes or statistics.",
+    bc: "If this retells a Bible account, stay faithful to the text, name the passage it comes from, and keep any added dialogue or detail within what the passage supports. Do not invent doctrine."
+  };
+
+  var CHECKS = [
+    { key: "ed1", stage: "edit", label: "Scene clips put together in the right order" },
+    { key: "ed2", stage: "edit", label: "Narration and sound effects added" },
+    { key: "ed3", stage: "edit", label: "Captions added and proofread" },
+    { key: "ed4", stage: "edit", label: "Final video exported and watched start to finish" },
+    { key: "pk1", stage: "pack", label: "Final title chosen" },
+    { key: "pk2", stage: "pack", label: "Description and tags written" },
+    { key: "pk3", stage: "pack", label: "Thumbnail made" },
+    { key: "pk4", stage: "pack", label: "Audience setting for kids checked in YouTube Studio", kidsOnly: true },
+    { key: "pk5", stage: "pack", label: "YouTube's question about realistic AI-made or altered content answered" }
+  ];
+
+  var KEY = "dreamland_v3";      // this page's own data
+  var KEY_V2 = "dreamland_v2";   // the live v0.2 data: this page only READS it, never writes it
+  var KEY_V1 = "dreamland_demo_v1";
+  var LIMITS = { title: 200, description: 3000, idea: 6000, script: 200000, scene: 6000, url: 1000, projects: 500, scenes: 200, characters: 100, prompts: 200, field: 3000, notes: 4000, style: 1000, paste: 400000 };
+
+  /* ---------- Small helpers ---------- */
+  var app = document.getElementById("app");
+  var storageOk = true;
+  var selected = "all";
+  var charFilter = "all";
+  var newChannel = null;
+  var saveTimer = null;
+  var saveObj = null;
+  var saveEl = null;
+  var toastTimer = null;
+  var fieldCounter = 0;
+  var uidN = 0;
+  var openState = {};
+  var copiedFromV2 = 0;
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) { n.className = cls; }
+    if (text !== undefined) { n.textContent = text; }
+    return n;
+  }
+  function btn(label, cls, fn) {
+    var b = el("button", "btn" + (cls ? " " + cls : ""), label);
+    b.type = "button";
+    b.addEventListener("click", fn);
+    return b;
+  }
+  function nowISO() { return new Date().toISOString(); }
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function dateStr() { var d = new Date(); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
+  function timeStr() { return new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); }
+  function fmtDate(iso) {
+    if (!iso) { return "never"; }
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) { return "unknown"; }
+    return d.toLocaleString([], { year: "numeric", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+  }
+  function uid() { return "p" + Date.now().toString(36) + (uidN++).toString(36) + Math.random().toString(36).slice(2, 6); }
+  function str(v, max) { if (typeof v !== "string") { return ""; } return v.length > max ? v.slice(0, max) : v; }
+  function wordCount(s) { return ((s || "").trim().match(/\S+/g) || []).length; }
+  function safeUrl(s) {
+    s = (s || "").trim();
+    if (!s) { return null; }
+    try {
+      var u = new URL(s);
+      return (u.protocol === "http:" || u.protocol === "https:") ? u.href : null;
+    } catch (e) { return null; }
+  }
+  function toast(msg) {
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = "show";
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.className = ""; }, 3800);
+  }
+  function copyText(text, srcEl, okMsg) {
+    function fallback() {
+      var t = srcEl, temp = null;
+      if (!t) {
+        temp = document.createElement("textarea");
+        temp.value = text;
+        temp.setAttribute("readonly", "");
+        temp.style.position = "fixed";
+        temp.style.opacity = "0";
+        document.body.appendChild(temp);
+        t = temp;
+      }
+      try {
+        t.focus(); t.select(); t.setSelectionRange(0, t.value.length);
+        toast(document.execCommand("copy") ? (okMsg || "Copied.") : "Press and hold the text, then choose Copy.");
+      } catch (e) { toast("Press and hold the text, then choose Copy."); }
+      if (temp) { document.body.removeChild(temp); }
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { toast(okMsg || "Copied."); }, fallback);
+    } else { fallback(); }
+  }
+
+  /* ---------- Data: normalise, load, save ---------- */
+  function normChecks(c) {
+    var out = {};
+    CHECKS.forEach(function (k) { if (c && typeof c === "object" && c[k.key] === true) { out[k.key] = true; } });
+    return out;
+  }
+  function normScene(s) {
+    s = s && typeof s === "object" ? s : {};
+    return {
+      id: str(s.id, 40) || uid(),
+      title: str(s.title, LIMITS.title),
+      imagePrompt: str(s.imagePrompt, LIMITS.scene),
+      animation: str(s.animation, LIMITS.scene),
+      narration: str(s.narration, LIMITS.scene),
+      sfx: str(s.sfx, LIMITS.scene),
+      imageDone: s.imageDone === true,
+      animDone: s.animDone === true,
+      audioDone: s.audioDone === true
+    };
+  }
+  function normCharacter(c) {
+    if (!c || typeof c !== "object") { return null; }
+    var t = nowISO();
+    return {
+      id: str(c.id, 40) || uid(),
+      name: str(c.name, 100).trim() || "Unnamed character",
+      channelId: str(c.channelId, 40),
+      role: str(c.role, 200),
+      appearance: str(c.appearance, LIMITS.field),
+      outfit: str(c.outfit, LIMITS.field),
+      personality: str(c.personality, LIMITS.field),
+      voice: str(c.voice, LIMITS.field),
+      rules: str(c.rules, LIMITS.field),
+      imageUrl: str(c.imageUrl, LIMITS.url),
+      notes: str(c.notes, LIMITS.field),
+      created: str(c.created, 40) || t,
+      updated: str(c.updated, 40) || t
+    };
+  }
+  var PROMPT_TYPES = [["image", "Image prompt"], ["animation", "Animation instructions"], ["sound", "Sound effects"]];
+  function normPrompt(x) {
+    if (!x || typeof x !== "object") { return null; }
+    var t = nowISO();
+    var type = PROMPT_TYPES.some(function (o) { return o[0] === x.type; }) ? x.type : "image";
+    return {
+      id: str(x.id, 40) || uid(),
+      name: str(x.name, 100).trim() || "Untitled prompt",
+      type: type,
+      channelId: str(x.channelId, 40),
+      text: str(x.text, LIMITS.scene),
+      created: str(x.created, 40) || t,
+      updated: str(x.updated, 40) || t
+    };
+  }
+  function normProject(p) {
+    if (!p || typeof p !== "object") { return null; }
+    var stage = parseInt(p.stage, 10);
+    if (!(stage >= 0 && stage < STAGES.length)) { stage = 0; }
+    var decision = (p.decision === "approved" || p.decision === "rejected") && stage === APPROVAL ? p.decision : null;
+    var dur = str(p.duration, 10);
+    var okDur = DURATIONS.some(function (d) { return d[0] === dur; });
+    var t = nowISO();
+    return {
+      id: str(p.id, 40) || uid(),
+      channelId: str(p.channelId, 40) || CHANNELS[0].id,
+      title: str(p.title, LIMITS.title) || "Untitled project",
+      description: str(p.description, LIMITS.description),
+      idea: str(p.idea, LIMITS.idea),
+      stage: stage,
+      decision: decision,
+      script: str(p.script, LIMITS.script),
+      scenes: Array.isArray(p.scenes) ? p.scenes.slice(0, LIMITS.scenes).map(normScene) : [],
+      previewUrl: str(p.previewUrl, LIMITS.url),
+      sample: p.sample === true,
+      created: str(p.created, 40) || t,
+      updated: str(p.updated, 40) || t,
+      // new in v0.3
+      tone: str(p.tone, 120),
+      duration: okDur ? dur : "60",
+      format: p.format === "long" ? "long" : "short",
+      charIds: Array.isArray(p.charIds) ? p.charIds.filter(function (x) { return typeof x === "string"; }).map(function (x) { return x.slice(0, 40); }).slice(0, 50) : [],
+      assistNotes: str(p.assistNotes, LIMITS.notes),
+      visualStyle: str(p.visualStyle, LIMITS.style),
+      sceneCount: SCENE_COUNTS.indexOf(String(p.sceneCount)) >= 0 ? String(p.sceneCount) : "auto",
+      sceneFormat: p.sceneFormat === "text" ? "text" : "json",
+      checks: normChecks(p.checks),
+      prevScript: str(p.prevScript, LIMITS.script)
+    };
+  }
+  function normState(d) {
+    return {
+      app: "dreamland-studios",
+      version: 3,
+      lastExport: str(d.lastExport, 40) || null,
+      projects: d.projects.slice(0, LIMITS.projects).map(normProject).filter(Boolean),
+      characters: Array.isArray(d.characters) ? d.characters.slice(0, LIMITS.characters).map(normCharacter).filter(Boolean) : [],
+      prompts: Array.isArray(d.prompts) ? d.prompts.slice(0, LIMITS.prompts).map(normPrompt).filter(Boolean) : []
+    };
+  }
+  function seedState() {
+    var old = {};
+    try { old = JSON.parse(localStorage.getItem(KEY_V1) || "{}") || {}; } catch (e) { old = {}; }
+    var projects = SAMPLES.map(function (s, i) {
+      var dec = old[i + 1];
+      return normProject({
+        id: s.id, channelId: s.ch, title: s.title,
+        description: "Sample project that shows how the dashboard works. You can edit or delete it.",
+        stage: s.stage,
+        decision: (s.stage === APPROVAL && (dec === "approved" || dec === "rejected")) ? dec : null,
+        sample: true
+      });
+    });
+    return { app: "dreamland-studios", version: 3, lastExport: null, projects: projects, characters: [], prompts: [] };
+  }
+  // Reads the live v0.2 data. Read-only: nothing is ever written back to the v0.2 key.
+  function readV2() {
+    try {
+      var raw = localStorage.getItem(KEY_V2);
+      if (!raw) { return null; }
+      var d = JSON.parse(raw);
+      if (d && Array.isArray(d.projects)) { return d.projects.slice(0, LIMITS.projects).map(normProject).filter(Boolean); }
+    } catch (e) { /* ignore */ }
+    return null;
+  }
+  function load() {
+    var raw = null;
+    try { raw = localStorage.getItem(KEY); } catch (e) { storageOk = false; }
+    if (raw) {
+      try {
+        var d = JSON.parse(raw);
+        if (d && Array.isArray(d.projects)) { return normState(d); }
+      } catch (e) { /* fall through */ }
+      try { localStorage.setItem(KEY + "_unreadable_copy", raw); } catch (e2) { /* ignore */ }
+    } else {
+      var v2 = readV2();
+      if (v2 && v2.length) {
+        copiedFromV2 = v2.length;
+        return { app: "dreamland-studios", version: 3, lastExport: null, projects: v2, characters: [], prompts: [] };
+      }
+    }
+    return seedState();
+  }
+  var state = load();
+
+  function save() {
+    var before = storageOk;
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+      storageOk = true;
+    } catch (e) {
+      storageOk = false;
+      toast("Could not save. Browser storage may be blocked or full. Download a backup.");
+    }
+    if (before !== storageOk) { updateStorageBanner(); }
+    return storageOk;
+  }
+  function setSaveStatus(text) { if (saveEl && document.body.contains(saveEl)) { saveEl.textContent = text; } }
+  function queueSave(obj) {
+    if (obj) { obj.updated = nowISO(); }
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(flushSave, 400);
+    setSaveStatus("Saving...");
+  }
+  function flushSave() {
+    clearTimeout(saveTimer);
+    saveTimer = null;
+    if (save()) { setSaveStatus("Saved in this browser at " + timeStr()); return true; }
+    setSaveStatus("NOT saved. See the warning at the top of the page.");
+    return false;
+  }
+  function updateStorageBanner() {
+    var b = document.getElementById("banner-storage");
+    b.textContent = "";
+    if (!storageOk) {
+      b.className = "banner bad";
+      b.appendChild(el("b", "", "Storage problem: "));
+      b.appendChild(document.createTextNode("this browser is not saving data (private mode, blocked, or full). Changes will be lost when you close this page. Use Backup & data to download a copy."));
+      return;
+    }
+    b.className = "banner";
+    b.appendChild(el("b", "", "Saved in this browser only. "));
+    b.appendChild(document.createTextNode("localStorage is not cloud storage. Your projects will not appear on your other devices (MacBook vs iPhone) or in other browsers, and clearing browser data erases them. Last backup: " + fmtDate(state.lastExport) + "."));
+  }
+
+  /* ---------- Lookups ---------- */
+  function channel(id) {
+    for (var i = 0; i < CHANNELS.length; i++) { if (CHANNELS[i].id === id) { return CHANNELS[i]; } }
+    return { id: id, name: id };
+  }
+  function findProject(id) {
+    for (var i = 0; i < state.projects.length; i++) { if (state.projects[i].id === id) { return state.projects[i]; } }
+    return null;
+  }
+  function findCharacter(id) {
+    for (var i = 0; i < state.characters.length; i++) { if (state.characters[i].id === id) { return state.characters[i]; } }
+    return null;
+  }
+  function findPrompt(id) {
+    for (var i = 0; i < state.prompts.length; i++) { if (state.prompts[i].id === id) { return state.prompts[i]; } }
+    return null;
+  }
+  function status(p) {
+    if (p.decision) { return p.decision; }
+    return p.stage === APPROVAL ? "review" : "working";
+  }
+  function statusLabel(p) {
+    var s = status(p);
+    return s === "review" ? "Awaiting approval" : s === "working" ? "In production" : s === "approved" ? "Approved" : "Rejected";
+  }
+  function visible() {
+    return state.projects.filter(function (p) { return selected === "all" || p.channelId === selected; });
+  }
+  function decide(p, d) {
+    p.decision = d;
+    p.updated = nowISO();
+    save();
+  }
+  function charsAvailable(p) {
+    return state.characters.filter(function (c) { return !c.channelId || c.channelId === p.channelId; });
+  }
+  function charsFor(p) {
+    return charsAvailable(p).filter(function (c) { return p.charIds.indexOf(c.id) >= 0; });
+  }
+
+  /* ---------- Navigation ---------- */
+  function go(hash) {
+    if (location.hash === hash) { route(); } else { location.hash = hash; }
+  }
+  function setNav(key) {
+    var nav = document.getElementById("nav");
+    nav.textContent = "";
+    [["dash", "Dashboard", "#/"], ["new", "+ New project", "#/new"], ["chars", "Characters", "#/characters"], ["prompts", "Prompts", "#/prompts"],["backup", "Backup & data", "#/backup"]].forEach(function (n) {
+      nav.appendChild(btn(n[1], n[0] === key ? "on" : "", function () {
+        if (n[0] === "new") { newChannel = selected === "all" ? null : selected; }
+        go(n[2]);
+      }));
+    });
+  }
+  function clearApp() { app.textContent = ""; saveEl = null; }
+  function route() {
+    if (saveTimer) { flushSave(); }
+    var h = location.hash || "#/";
+    var m = h.match(/^#\/project\/([^?]+)$/);
+    var c = h.match(/^#\/character\/([^?]+)$/);
+    window.scrollTo(0, 0);
+    if (m) { viewProject(decodeURIComponent(m[1])); }
+    else if (c) { viewCharacter(decodeURIComponent(c[1])); }
+    else if (h === "#/characters") { viewCharacters(); }
+    else if (h === "#/prompts") { viewPrompts(); }
+    else if (h === "#/new") { viewNew(); }
+    else if (h === "#/backup") { viewBackup(); }
+    else { viewDashboard(); }
+  }
+  function rerenderProject(id) {
+    var y = window.pageYOffset;
+    viewProject(id);
+    window.scrollTo(0, y);
+  }
+
+  /* ---------- Form building blocks ---------- */
+  function field(labelText, control) {
+    var id = "f" + (++fieldCounter);
+    control.id = id;
+    var w = el("div", "field");
+    var l = el("label", "", labelText);
+    l.setAttribute("for", id);
+    w.appendChild(l);
+    w.appendChild(control);
+    return w;
+  }
+  function textInput(value, max) {
+    var i = el("input");
+    i.type = "text";
+    i.value = value || "";
+    i.maxLength = max;
+    i.setAttribute("autocomplete", "off");
+    return i;
+  }
+  function textArea(value, rows, max, cls) {
+    var t = el("textarea", cls || "");
+    t.value = value || "";
+    t.rows = rows;
+    t.maxLength = max;
+    return t;
+  }
+  function selectEl(opts, value) {
+    var s = el("select");
+    opts.forEach(function (o) { var op = el("option", "", o[1]); op.value = o[0]; s.appendChild(op); });
+    s.value = value;
+    return s;
+  }
+  function channelSelect(value, withPlaceholder) {
+    var s = el("select");
+    if (withPlaceholder) {
+      var ph = el("option", "", "Choose a channel...");
+      ph.value = "";
+      s.appendChild(ph);
+    }
+    var known = false;
+    CHANNELS.forEach(function (c) {
+      var o = el("option", "", c.name);
+      o.value = c.id;
+      if (c.id === value) { known = true; }
+      s.appendChild(o);
+    });
+    if (value && !known) {
+      var u = el("option", "", value + " (unknown channel)");
+      u.value = value;
+      s.appendChild(u);
+    }
+    s.value = value || "";
+    return s;
+  }
+  function checkRow(label, checked, onChange) {
+    var l = el("label", "check");
+    var c = el("input");
+    c.type = "checkbox";
+    c.checked = !!checked;
+    c.addEventListener("change", function () { onChange(c.checked); });
+    l.appendChild(c);
+    l.appendChild(el("span", "", label));
+    return l;
+  }
+  function panel(title) {
+    var d = el("div", "panel");
+    d.appendChild(el("h3", "", title));
+    return d;
+  }
+  // A collapsible section that remembers whether it was open.
+  function sec(id, title, defOpen) {
+    var d = el("details", "panel");
+    d.open = Object.prototype.hasOwnProperty.call(openState, id) ? openState[id] : defOpen;
+    var s = el("summary");
+    var h = el("h3", "", title);
+    s.appendChild(h);
+    d.appendChild(s);
+    d.addEventListener("toggle", function () { openState[id] = d.open; });
+    d._h = h;
+    return d;
+  }
+  function hint(text) { return el("p", "hint", text); }
+  function manualNote() {
+    var d = el("div", "manual");
+    d.appendChild(el("b", "", "MANUAL TOOL. "));
+    d.appendChild(document.createTextNode("This builds a request for you to copy into an AI chat tool you already use. Nothing is sent anywhere, and no AI runs inside this page."));
+    return d;
+  }
+
+  /* ---------- Characters: text blocks ---------- */
+  function oneLine(v) { return (v || "").replace(/\s*\n\s*/g, " ").trim(); }
+  function charSheet(c, mode) {
+    var L = [];
+    function add(label, v) { if (oneLine(v)) { L.push("  " + label + ": " + oneLine(v)); } }
+    L.push("- " + c.name + (oneLine(c.role) ? " (" + oneLine(c.role) + ")" : ""));
+    if (mode === "script") {
+      add("Personality", c.personality);
+      add("Voice and speech", c.voice);
+      add("Rules", c.rules);
+    } else if (mode === "scene") {
+      add("Look (repeat this word for word in every image prompt where the character appears)", c.appearance);
+      add("Outfit and props", c.outfit);
+      add("Rules", c.rules);
+    } else {
+      if (c.channelId) { add("Channel", channel(c.channelId).name); }
+      add("Look (keep identical in every image)", c.appearance);
+      add("Outfit and props", c.outfit);
+      add("Personality", c.personality);
+      add("Voice and speech", c.voice);
+      add("Rules", c.rules);
+      add("Reference image", c.imageUrl);
+      add("Notes", c.notes);
+    }
+    return L.join("\n");
+  }
+
+  /* ---------- Request builders (manual prompt tools) ---------- */
+  function durLabel(p) {
+    for (var i = 0; i < DURATIONS.length; i++) { if (DURATIONS[i][0] === p.duration) { return DURATIONS[i][1].toLowerCase(); } }
+    return "1 minute";
+  }
+  function fmtLabel(p) {
+    return p.format === "long" ? "Standard YouTube video (horizontal 16:9)" : "YouTube Short (vertical 9:16)";
+  }
+  function buildScriptPrompt(p) {
+    var ch = channel(p.channelId);
+    var secs = parseInt(p.duration, 10) || 60;
+    var words = Math.round(secs * 2.5);
+    var chars = charsFor(p);
+    var idea = p.idea.trim() || p.description.trim() || "[Write your video idea here]";
+    var L = [];
+    L.push("You are an experienced scriptwriter for the YouTube channel \"" + ch.name + "\".");
+    L.push("");
+    L.push("TASK");
+    L.push("Write one complete script for the video described below. It will be turned into a finished video by hand, so make it clear and easy to produce.");
+    L.push("");
+    L.push("VIDEO DETAILS");
+    L.push("- Working title: " + (p.title.trim() || "[none yet]"));
+    if (p.description.trim()) { L.push("- Description: " + p.description.trim()); }
+    L.push("- Idea: " + idea);
+    L.push("- Tone: " + (p.tone || "[not chosen: use whatever fits the idea]"));
+    L.push("- Format: " + fmtLabel(p));
+    L.push("- Target length: " + durLabel(p) + " (roughly " + words + " spoken words)");
+    if (GUARDRAILS[p.channelId]) {
+      L.push("");
+      L.push("CHANNEL GUARDRAILS");
+      L.push(GUARDRAILS[p.channelId]);
+    }
+    if (chars.length) {
+      L.push("");
+      L.push("RECURRING CHARACTERS (keep each personality and way of speaking consistent)");
+      chars.forEach(function (c) { L.push(charSheet(c, "script")); });
+    }
+    if (p.assistNotes.trim()) {
+      L.push("");
+      L.push("EXTRA INSTRUCTIONS FROM ME");
+      L.push(p.assistNotes.trim());
+    }
+    L.push("");
+    L.push("REQUIREMENTS");
+    L.push("- Open with a strong hook in the first few seconds.");
+    L.push("- Stay within about 10% of the target length.");
+    L.push("- Give the story a clear beginning, a middle with a surprise or problem, and a satisfying ending.");
+    L.push("- Use original content only: no real people, no copyrighted characters, no song lyrics.");
+    L.push("");
+    L.push("OUTPUT FORMAT");
+    L.push("- Start each spoken line with the speaker's name in capitals and a colon, for example NARRATOR: or the character's name.");
+    L.push("- Put sound cues and important visual actions in [square brackets] on their own lines.");
+    L.push("- Separate story beats with a blank line.");
+    L.push("- Reply with the script only: no introduction, no notes, no markdown.");
+    return L.join("\n");
+  }
+  function buildScenePrompt(p) {
+    var ch = channel(p.channelId);
+    var chars = charsFor(p);
+    var script = p.script.trim() || "[Paste your script here]";
+    var L = [];
+    L.push("You are a storyboard artist and animation director for the YouTube channel \"" + ch.name + "\".");
+    L.push("");
+    L.push("TASK");
+    L.push("Break the script below into numbered scenes that I can turn into still images, simple animation, voice and sound by hand.");
+    L.push("");
+    L.push("VIDEO DETAILS");
+    L.push("- Working title: " + (p.title.trim() || "[none yet]"));
+    L.push("- Tone: " + (p.tone || "[use whatever fits the script]"));
+    L.push("- Format: " + fmtLabel(p));
+    L.push("- Target length: " + durLabel(p));
+    L.push("");
+    L.push("VISUAL STYLE (apply to every image prompt)");
+    L.push(p.visualStyle.trim() || "[Not set yet: describe the art style here, for example the look, colors and level of detail]");
+    if (GUARDRAILS[p.channelId]) {
+      L.push("");
+      L.push("CHANNEL GUARDRAILS");
+      L.push(GUARDRAILS[p.channelId]);
+    }
+    if (chars.length) {
+      L.push("");
+      L.push("CHARACTER REFERENCE (these characters must look exactly the same in every scene)");
+      chars.forEach(function (c) { L.push(charSheet(c, "scene")); });
+    }
+    L.push("");
+    L.push("SCENE COUNT");
+    L.push(p.sceneCount === "auto" ? "Choose the number of scenes yourself, roughly one scene for every 4 to 8 seconds of the video." : "Use about " + p.sceneCount + " scenes.");
+    L.push("");
+    L.push("FOR EACH SCENE, GIVE ME");
+    L.push("- title: a short label for the scene.");
+    L.push("- imagePrompt: a complete, standalone prompt for an AI image generator. Describe the setting, composition, camera angle, lighting, mood and action. Restate the full look of every character who appears, exactly as written in the character reference, and include the visual style. Match the aspect ratio of the format above. Do not ask for any text or captions inside the image.");
+    L.push("- animation: how the still image should move: camera move (for example slow push-in or pan left), character motion, effects, and a duration of about 3 to 8 seconds.");
+    L.push("- narration: the exact words spoken in this scene, copied from the script with speaker names. Leave it empty if the scene is silent.");
+    L.push("- soundEffects: sound effects and music cues for this scene.");
+    L.push("");
+    L.push("RULES");
+    L.push("- Cover the whole script, in order, without adding new story.");
+    L.push("- Keep every character's look identical from scene to scene.");
+    L.push("- Use original content only: no real people and no copyrighted characters.");
+    L.push("");
+    L.push("OUTPUT FORMAT");
+    if (p.sceneFormat === "json") {
+      L.push("Reply with ONLY valid JSON inside a single code block, with no text before or after it, in exactly this shape:");
+      L.push("{\"scenes\":[{\"title\":\"...\",\"imagePrompt\":\"...\",\"animation\":\"...\",\"narration\":\"...\",\"soundEffects\":\"...\"}]}");
+      L.push("Use double quotes, no trailing commas, and write any line break inside a value as \\n.");
+    } else {
+      L.push("For each scene use exactly this layout, with a blank line between scenes, and no other commentary:");
+      L.push("SCENE 1: title");
+      L.push("IMAGE PROMPT: ...");
+      L.push("ANIMATION: ...");
+      L.push("NARRATION: ...");
+      L.push("SOUND EFFECTS: ...");
+    }
+    L.push("");
+    L.push("SCRIPT");
+    L.push("-----");
+    L.push(script);
+    L.push("-----");
+    L.push("");
+    L.push("Now produce the scenes in the exact output format above.");
+    return L.join("\n");
+  }
+
+  /* ---------- Reading pasted scenes ---------- */
+  var SCENE_KEYS = {
+    title: ["title", "scenetitle", "name", "summary", "heading"],
+    imagePrompt: ["imageprompt", "image", "prompt", "visual", "visualprompt", "imagedescription"],
+    animation: ["animation", "animationdirection", "animationdirections", "animationinstructions", "animationnotes", "motion", "camera"],
+    narration: ["narration", "voiceover", "voice", "dialogue", "dialog", "spoken", "vo"],
+    sfx: ["soundeffects", "soundeffect", "sfx", "sound", "sounds", "soundcues", "audio", "music"]
+  };
+  function mapKey(k) {
+    var n = String(k).toLowerCase().replace(/[^a-z0-9]/g, "");
+    for (var f in SCENE_KEYS) {
+      if (Object.prototype.hasOwnProperty.call(SCENE_KEYS, f) && SCENE_KEYS[f].indexOf(n) >= 0) { return f; }
+    }
+    return null;
+  }
+  function valText(v) {
+    if (v === null || v === undefined) { return ""; }
+    if (Array.isArray(v)) { return v.map(valText).join("\n"); }
+    if (typeof v === "object") { try { return JSON.stringify(v); } catch (e) { return ""; } }
+    return String(v);
+  }
+  function hasContent(s) { return !!(s.title || s.imagePrompt || s.animation || s.narration || s.sfx); }
+  function extractJSON(text) {
+    var t = text.trim();
+    var fence = t.match(/```(?:json)?\s*([\s\S]*?)```/i);
+    if (fence) { t = fence[1].trim(); }
+    var tries = [t];
+    var a = t.indexOf("{"), b = t.lastIndexOf("}");
+    if (a >= 0 && b > a) { tries.push(t.slice(a, b + 1)); }
+    var c = t.indexOf("["), d = t.lastIndexOf("]");
+    if (c >= 0 && d > c) { tries.push(t.slice(c, d + 1)); }
+    tries.push(t.replace(/[“”]/g, "\""));
+    for (var i = 0; i < tries.length; i++) {
+      try { return JSON.parse(tries[i]); } catch (e) { /* next */ }
+    }
+    return null;
+  }
+  function scenesFromJSON(obj) {
+    var arr = null;
+    if (Array.isArray(obj)) { arr = obj; }
+    else if (obj && typeof obj === "object") {
+      if (Array.isArray(obj.scenes)) { arr = obj.scenes; }
+      else if (Array.isArray(obj.Scenes)) { arr = obj.Scenes; }
+      else { for (var k in obj) { if (Object.prototype.hasOwnProperty.call(obj, k) && Array.isArray(obj[k])) { arr = obj[k]; break; } } }
+    }
+    if (!arr) { return []; }
+    var out = [];
+    arr.forEach(function (item) {
+      if (!item || typeof item !== "object" || Array.isArray(item)) { return; }
+      var s = { title: "", imagePrompt: "", animation: "", narration: "", sfx: "" };
+      for (var key in item) {
+        if (!Object.prototype.hasOwnProperty.call(item, key)) { continue; }
+        var f = mapKey(key);
+        if (f && !s[f]) { s[f] = valText(item[key]).trim(); }
+      }
+      if (hasContent(s)) { out.push(s); }
+    });
+    return out;
+  }
+  function scenesFromText(text) {
+    var lines = text.replace(/\r/g, "").split("\n");
+    var scenes = [], cur = null, fld = null;
+    var headRe = /^(?:scene|shot)\s*#?\s*(\d+)\s*[:.\-–—)]*\s*(.*)$/i;
+    var labelRe = /^(title|scene title|image prompt|image|animation directions?|animation instructions?|animation notes|animation|camera|narration|voice[- ]?over|dialogue|sound effects?|sfx|sound cues?|sound|music)\s*[:\-–—]\s*(.*)$/i;
+    lines.forEach(function (line) {
+      var raw = line.replace(/^\s*(?:[#>]+\s*|[-*•]\s+)?/, "").replace(/\*\*|__/g, "").trim();
+      if (!raw) { return; }
+      var h = raw.match(headRe);
+      if (h) {
+        cur = { title: h[2].trim(), imagePrompt: "", animation: "", narration: "", sfx: "" };
+        scenes.push(cur);
+        fld = null;
+        return;
+      }
+      if (!cur) { return; }
+      var l = raw.match(labelRe);
+      if (l) {
+        fld = mapKey(l[1]);
+        if (fld) { cur[fld] = (cur[fld] ? cur[fld] + "\n" : "") + l[2].trim(); }
+        return;
+      }
+      if (fld) { cur[fld] = (cur[fld] ? cur[fld] + "\n" : "") + raw; }
+    });
+    return scenes.filter(hasContent);
+  }
+  function parseScenes(text) {
+    var t = text.trim();
+    if (/[\[{]/.test(t)) {
+      var obj = extractJSON(t);
+      if (obj !== null) {
+        var js = scenesFromJSON(obj);
+        if (js.length) { return { scenes: js, method: "JSON" }; }
+      }
+    }
+    var ts = scenesFromText(t);
+    if (ts.length) { return { scenes: ts, method: "labeled text" }; }
+    return { scenes: [], method: "" };
+  }
+  function tidyText(s) {
+    return s.replace(/\r/g, "").split("\n").filter(function (l) { return !/^\s*```/.test(l); }).join("\n").replace(/\*\*/g, "").trim();
+  }
+  function scenesAsText(p) {
+    return p.scenes.map(function (s, i) {
+      return "SCENE " + (i + 1) + ": " + s.title + "\nIMAGE PROMPT: " + s.imagePrompt + "\nANIMATION: " + s.animation + "\nNARRATION: " + s.narration + "\nSOUND EFFECTS: " + s.sfx;
+    }).join("\n\n");
+  }
+
+  /* ---------- Production workflow (a guide, never automatic) ---------- */
+  function wfRows(p) {
+    var ch = channel(p.channelId);
+    var n = p.scenes.length;
+    var words = wordCount(p.script);
+    function cnt(k) { return p.scenes.filter(function (s) { return s[k]; }).length; }
+    function prog(k, what) {
+      if (!n) { return { state: "todo", text: "Plan your scenes first (Scene planning is empty)." }; }
+      var d = cnt(k);
+      return { state: d === n ? "done" : d > 0 ? "part" : "todo", text: d + " of " + n + " scenes: " + what + "." };
+    }
+    var rows = [];
+    var hasIdea = !!(p.idea.trim() || p.description.trim());
+    rows.push({ key: "idea", name: "Idea", state: hasIdea ? "done" : "todo", text: hasIdea ? "Idea or description written." : "Write an idea or description in Details." });
+    rows.push({ key: "script", name: "Script", state: words > 0 ? "done" : "todo", text: words > 0 ? words + " words written (about " + Math.round(words / 150 * 60) + " seconds spoken)." : "No script yet. Use the Script helper, then paste the reply into Script workspace." });
+    var im = prog("imageDone", "image made"); im.key = "images"; im.name = "Images"; rows.push(im);
+    var an = prog("animDone", "animation made"); an.key = "animation"; an.name = "Animation"; rows.push(an);
+    var vo = prog("audioDone", "voice and sound ready"); vo.key = "voice"; vo.name = "Voice & SFX"; rows.push(vo);
+    var ed = CHECKS.filter(function (k) { return k.stage === "edit"; });
+    var edDone = ed.filter(function (k) { return p.checks[k.key]; }).length;
+    rows.push({ key: "edit", name: "Editing", state: edDone === ed.length ? "done" : edDone > 0 ? "part" : "todo", text: edDone + " of " + ed.length + " editing checks ticked.", items: ed });
+    var pk = CHECKS.filter(function (k) { return k.stage === "pack" && (!k.kidsOnly || ch.kids); });
+    var linkOk = !!safeUrl(p.previewUrl);
+    var pkDone = pk.filter(function (k) { return p.checks[k.key]; }).length + (linkOk ? 1 : 0);
+    var pkTotal = pk.length + 1;
+    rows.push({ key: "pack", name: "Packaging", state: pkDone === pkTotal ? "done" : pkDone > 0 ? "part" : "todo", text: pkDone + " of " + pkTotal + " packaging checks done.", items: pk, linkOk: linkOk });
+    var st = status(p);
+    rows.push({ key: "approval", name: "Approval", state: st === "approved" ? "done" : st === "rejected" ? "bad" : st === "review" ? "part" : "todo", text: st === "approved" ? "Approved by you." : st === "rejected" ? "Rejected by you." : st === "review" ? "Waiting for your decision." : "Opens when the tracker reaches Approval." });
+    return rows;
+  }
+
+  /* ---------- View: dashboard (v0.1 and v0.2 features kept) ---------- */
+  function drawChips(box, redraw, current, setter) {
+    box.textContent = "";
+    [{ id: "all", name: "All" }].concat(CHANNELS).forEach(function (c) {
+      var b = el("button", "chip" + (c.id === current ? " on" : ""), c.name);
+      b.type = "button";
+      b.addEventListener("click", function () { setter(c.id); redraw(); });
+      box.appendChild(b);
+    });
+  }
+  function drawStats(box) {
+    var n = { review: 0, working: 0, approved: 0, rejected: 0 };
+    visible().forEach(function (p) { n[status(p)]++; });
+    box.textContent = "";
+    [["Awaiting approval", n.review], ["In production", n.working], ["Approved", n.approved], ["Rejected", n.rejected]].forEach(function (s) {
+      var card = el("div", "stat");
+      card.appendChild(el("b", "", String(s[1])));
+      card.appendChild(el("span", "", s[0]));
+      box.appendChild(card);
+    });
+  }
+  function drawList(box, redraw) {
+    box.textContent = "";
+    var items = visible();
+    if (!items.length) {
+      box.appendChild(el("p", "sub", state.projects.length ? "No projects for this channel yet." : "No projects yet. Tap + New project to start one."));
+      return;
+    }
+    items.forEach(function (p) {
+      var st = status(p);
+      var ch = channel(p.channelId);
+      var card = el("div", "video");
+      card.appendChild(el("div", "vtitle", p.title));
+      var blurb = p.description || p.idea;
+      if (blurb) { card.appendChild(el("div", "desc", blurb)); }
+
+      var meta = el("div", "meta");
+      meta.appendChild(el("span", "tag", ch.name));
+      if (ch.kids) { meta.appendChild(el("span", "tag kids", "Made for kids: extra rules apply")); }
+      if (p.sample) { meta.appendChild(el("span", "tag", "Sample")); }
+      meta.appendChild(el("span", "", "Stage " + (p.stage + 1) + " of " + STAGES.length + ": " + STAGES[p.stage]));
+      card.appendChild(meta);
+
+      var bar = el("div", "bar");
+      var fill = el("div");
+      fill.style.width = Math.round(((p.stage + 1) / STAGES.length) * 100) + "%";
+      bar.appendChild(fill);
+      card.appendChild(bar);
+
+      var row = el("div", "btns");
+      if (st === "review") {
+        card.appendChild(el("div", "st-review", "Waiting for your approval"));
+        var yes = el("button", "act yes", "Approve");
+        yes.type = "button";
+        yes.addEventListener("click", function () { decide(p, "approved"); redraw(); });
+        var no = el("button", "act no", "Reject");
+        no.type = "button";
+        no.addEventListener("click", function () { decide(p, "rejected"); redraw(); });
+        row.appendChild(yes);
+        row.appendChild(no);
+      } else if (st === "approved" || st === "rejected") {
+        card.appendChild(el("div", "st-" + st, st === "approved" ? "Approved (a note to yourself, nothing was published)" : "Rejected"));
+        var undo = el("button", "act undo", "Undo");
+        undo.type = "button";
+        undo.addEventListener("click", function () { decide(p, null); redraw(); });
+        row.appendChild(undo);
+      } else {
+        card.appendChild(el("div", "meta", "In production"));
+      }
+      row.appendChild(btn("Open / edit", "", function () { go("#/project/" + encodeURIComponent(p.id)); }));
+      card.appendChild(row);
+      box.appendChild(card);
+    });
+  }
+  function viewDashboard() {
+    setNav("dash");
+    clearApp();
+    var top = el("div", "btns");
+    top.appendChild(btn("+ New project", "primary", function () { newChannel = selected === "all" ? null : selected; go("#/new"); }));
+    app.appendChild(top);
+    var chips = el("div", "chips");
+    var stats = el("div", "stats");
+    var title = el("h2", "");
+    var list = el("div");
+    app.appendChild(chips);
+    app.appendChild(stats);
+    app.appendChild(title);
+    app.appendChild(list);
+    function draw() {
+      drawChips(chips, draw, selected, function (v) { selected = v; });
+      drawStats(stats);
+      title.textContent = selected === "all" ? "All channels" : channel(selected).name;
+      drawList(list, draw);
+    }
+    draw();
+  }
+
+  /* ---------- View: new project ---------- */
+  function viewNew() {
+    setNav("new");
+    clearApp();
+    app.appendChild(el("h2", "", "New project"));
+    app.appendChild(hint("This saves a project note in this browser. It does not generate anything, contact YouTube, or publish anything."));
+    var form = el("div", "panel");
+    var chSel = channelSelect(newChannel, true);
+    var tIn = textInput("", LIMITS.title);
+    var dIn = textArea("", 3, LIMITS.description);
+    var iIn = textArea("", 5, LIMITS.idea);
+    form.appendChild(field("YouTube channel (required)", chSel));
+    form.appendChild(field("Video title (required)", tIn));
+    form.appendChild(field("Description", dIn));
+    form.appendChild(field("Idea", iIn));
+    var row = el("div", "btns");
+    row.appendChild(btn("Save project", "primary", function () {
+      var title = tIn.value.trim();
+      if (!chSel.value) { toast("Please choose a channel."); chSel.focus(); return; }
+      if (!title) { toast("Please enter a video title."); tIn.focus(); return; }
+      var t = nowISO();
+      var p = normProject({ id: uid(), channelId: chSel.value, title: title, description: dIn.value, idea: iIn.value, stage: 0, created: t, updated: t });
+      state.projects.unshift(p);
+      if (save()) { toast("Project saved in this browser."); }
+      go("#/project/" + encodeURIComponent(p.id));
+    }));
+    row.appendChild(btn("Cancel", "", function () { go("#/"); }));
+    form.appendChild(row);
+    app.appendChild(form);
+  }
+
+  /* ---------- View: one project ---------- */
+  function setStage(p, n) {
+    if (n < 0 || n >= STAGES.length || n === p.stage) { return; }
+    if (p.decision && n !== APPROVAL) {
+      if (!confirm("This project is marked " + p.decision + ". Moving it out of the Approval stage clears that decision. Continue?")) { return; }
+      p.decision = null;
+    }
+    p.stage = n;
+    p.updated = nowISO();
+    save();
+    rerenderProject(p.id);
+  }
+
+  function renderScenes(p, box, countEl, onChange) {
+    box.textContent = "";
+    countEl.textContent = "Scene planning (" + p.scenes.length + ")";
+    if (!p.scenes.length) { box.appendChild(hint("No scenes yet. Tap Add scene, or use the Scene helper above and paste its reply.")); }
+    function redo() { renderScenes(p, box, countEl, onChange); }
+    p.scenes.forEach(function (s, i) {
+      var card = el("div", "scene");
+      var head = el("div", "scenehead");
+      head.appendChild(el("b", "", "Scene " + (i + 1)));
+      var tools = el("div", "btns");
+      tools.appendChild(btn("Up", "small", function () {
+        if (i === 0) { return; }
+        p.scenes.splice(i - 1, 0, p.scenes.splice(i, 1)[0]);
+        queueSave(p); flushSave(); redo(); onChange();
+      }));
+      tools.appendChild(btn("Down", "small", function () {
+        if (i === p.scenes.length - 1) { return; }
+        p.scenes.splice(i + 1, 0, p.scenes.splice(i, 1)[0]);
+        queueSave(p); flushSave(); redo(); onChange();
+      }));
+      tools.appendChild(btn("Delete", "small danger", function () {
+        if (!confirm("Delete scene " + (i + 1) + "?")) { return; }
+        p.scenes.splice(i, 1);
+        queueSave(p); flushSave(); redo(); onChange();
+      }));
+      head.appendChild(tools);
+      card.appendChild(head);
+
+      function bindScene(key, labelText, rows, isLine) {
+        var c = isLine ? textInput(s[key], LIMITS.title) : textArea(s[key], rows, LIMITS.scene);
+        c.addEventListener("input", function () { s[key] = c.value; queueSave(p); });
+        card.appendChild(field(labelText, c));
+        return c;
+      }
+      bindScene("title", "Scene title or summary", 0, true);
+      bindScene("imagePrompt", "Image prompt", 3, false);
+      bindScene("animation", "Animation instructions", 3, false);
+      bindScene("narration", "Narration", 3, false);
+      bindScene("sfx", "Sound effects", 2, false);
+
+      var flags = el("div");
+      flags.appendChild(checkRow("Image made", s.imageDone, function (v) { s.imageDone = v; queueSave(p); onChange(); }));
+      flags.appendChild(checkRow("Animation made", s.animDone, function (v) { s.animDone = v; queueSave(p); onChange(); }));
+      flags.appendChild(checkRow("Voice and sound ready", s.audioDone, function (v) { s.audioDone = v; queueSave(p); onChange(); }));
+      card.appendChild(flags);
+
+      var cp = el("div", "btns");
+      cp.appendChild(btn("Copy image prompt", "small", function () { copyText(s.imagePrompt, null, "Image prompt copied."); }));
+      cp.appendChild(btn("Copy animation", "small", function () { copyText(s.animation, null, "Animation instructions copied."); }));
+      cp.appendChild(btn("Copy narration", "small", function () { copyText(s.narration, null, "Narration copied."); }));
+      card.appendChild(cp);
+
+      function toLib(type, text, label) {
+        if (!text.trim()) { toast("Nothing to save yet. Write the " + label + " first."); return; }
+        if (state.prompts.length >= LIMITS.prompts) { toast("The prompt library is full."); return; }
+        state.prompts.unshift(normPrompt({ id: uid(), name: (s.title.trim() || "Scene " + (i + 1)) + " (" + label + ")", type: type, channelId: p.channelId, text: text }));
+        save();
+        toast("Saved to the Prompt library.");
+        redo();
+      }
+      var lib = el("div", "btns");
+      lib.appendChild(btn("Save image prompt to library", "small", function () { toLib("image", s.imagePrompt, "image"); }));
+      lib.appendChild(btn("Save animation to library", "small", function () { toLib("animation", s.animation, "animation"); }));
+      card.appendChild(lib);
+      [["image", "imagePrompt", "Insert a saved image prompt..."], ["animation", "animation", "Insert a saved animation prompt..."], ["sound", "sfx", "Insert a saved sound effect..."]].forEach(function (o) {
+        var items = state.prompts.filter(function (x) { return x.type === o[0] && (!x.channelId || x.channelId === p.channelId); });
+        if (!items.length) { return; }
+        var sel = selectEl([["", o[2]]].concat(items.map(function (x) { return [x.id, x.name]; })), "");
+        sel.setAttribute("aria-label", o[2]);
+        sel.style.marginTop = "8px";
+        sel.addEventListener("change", function () {
+          var it = findPrompt(sel.value);
+          if (!it) { return; }
+          s[o[1]] = ((s[o[1]] ? s[o[1]].replace(/\s+$/, "") + "\n" : "") + it.text).slice(0, LIMITS.scene);
+          queueSave(p); flushSave(); redo();
+        });
+        card.appendChild(sel);
+      });
+      box.appendChild(card);
+    });
+  }
+
+  function viewProject(id) {
+    var p = findProject(id);
+    setNav("");
+    clearApp();
+    if (!p) {
+      app.appendChild(el("p", "sub", "Project not found. It may have been deleted."));
+      app.appendChild(btn("Back to dashboard", "primary", function () { go("#/"); }));
+      return;
+    }
+    app.appendChild(btn("← Dashboard", "", function () { go("#/"); }));
+
+    var head = el("div");
+    var h = el("h2", "");
+    var meta = el("div", "meta");
+    head.appendChild(h);
+    head.appendChild(meta);
+    app.appendChild(head);
+    function refreshHead() {
+      h.textContent = p.title || "(untitled)";
+      meta.textContent = "";
+      var ch = channel(p.channelId);
+      meta.appendChild(el("span", "tag", ch.name));
+      if (ch.kids) { meta.appendChild(el("span", "tag kids", "Made for kids: extra rules apply")); }
+      meta.appendChild(el("span", "tag st-" + status(p), statusLabel(p)));
+      if (p.sample) { meta.appendChild(el("span", "tag", "Sample")); }
+    }
+    refreshHead();
+
+    saveEl = el("div", "savestat", "Changes save automatically in this browser.");
+    app.appendChild(saveEl);
+    var jump = el("div", "jump");
+    app.appendChild(jump);
+
+    var refreshWF = function () {};
+    var reqS = null, reqN = null;
+    function touch() { queueSave(p); refreshWF(); }
+    function refreshReqs() { if (reqS) { reqS.refresh(); } if (reqN) { reqN.refresh(); } }
+    function channelChanged() { flushSave(); rerenderProject(p.id); }
+
+    /* --- Details --- */
+    var pd = sec("details", "Details", true);
+    var chSel = channelSelect(p.channelId, false);
+    chSel.addEventListener("change", function () { p.channelId = chSel.value; queueSave(p); channelChanged(); });
+    pd.appendChild(field("YouTube channel", chSel));
+    var tIn = textInput(p.title, LIMITS.title);
+    tIn.addEventListener("input", function () { p.title = tIn.value; touch(); refreshHead(); refreshReqs(); });
+    tIn.addEventListener("change", function () {
+      var v = tIn.value.trim() || "Untitled project";
+      tIn.value = v; p.title = v; touch(); refreshHead(); refreshReqs();
+    });
+    pd.appendChild(field("Video title", tIn));
+    var dArea = textArea(p.description, 3, LIMITS.description);
+    dArea.addEventListener("input", function () { p.description = dArea.value; touch(); refreshReqs(); });
+    pd.appendChild(field("Description", dArea));
+    var ideaA = textArea(p.idea, 4, LIMITS.idea);
+    var ideaB = null; // the same idea shown in the Script helper
+    ideaA.addEventListener("input", function () { p.idea = ideaA.value; if (ideaB) { ideaB.value = p.idea; } touch(); refreshReqs(); });
+    pd.appendChild(field("Idea", ideaA));
+    app.appendChild(pd);
+
+    /* --- Production tracker --- */
+    var pt = sec("tracker", "Production tracker", true);
+    var steps = el("div", "steps");
+    STAGES.forEach(function (name, i) {
+      var b = el("button", "step" + (i < p.stage ? " done" : "") + (i === p.stage ? " cur" : ""), (i + 1) + ". " + name);
+      b.type = "button";
+      b.addEventListener("click", function () { setStage(p, i); });
+      steps.appendChild(b);
+    });
+    pt.appendChild(steps);
+    var bar = el("div", "bar");
+    var fill = el("div");
+    fill.style.width = Math.round(((p.stage + 1) / STAGES.length) * 100) + "%";
+    bar.appendChild(fill);
+    pt.appendChild(bar);
+    pt.appendChild(el("div", "hint", "Current stage: " + STAGES[p.stage] + " (" + (p.stage + 1) + " of " + STAGES.length + "). Tap a stage to jump to it."));
+    var trow = el("div", "btns");
+    trow.appendChild(btn("← Back a stage", "", function () { setStage(p, p.stage - 1); }));
+    trow.appendChild(btn("Next stage →", "primary", function () { setStage(p, p.stage + 1); }));
+    pt.appendChild(trow);
+    app.appendChild(pt);
+
+    /* --- Production workflow --- */
+    var pw = sec("workflow", "Production workflow", true);
+    pw.appendChild(hint("A guide that follows what you have written and ticked. You still move the tracker and approve by hand."));
+    var wfBox = el("div");
+    pw.appendChild(wfBox);
+    app.appendChild(pw);
+
+    /* --- Character picker (shared by both helpers) --- */
+    function charPicker() {
+      var box = el("div");
+      var avail = charsAvailable(p);
+      box.appendChild(el("div", "hint", "Characters in this video (from your Character library):"));
+      if (!avail.length) {
+        box.appendChild(hint("No characters saved for this channel yet."));
+      } else {
+        var pick = el("div", "pick");
+        avail.forEach(function (c) {
+          pick.appendChild(checkRow(c.name + (c.channelId ? "" : " (any channel)"), p.charIds.indexOf(c.id) >= 0, function (v) {
+            var i = p.charIds.indexOf(c.id);
+            if (v && i < 0) { p.charIds.push(c.id); }
+            if (!v && i >= 0) { p.charIds.splice(i, 1); }
+            queueSave(p); flushSave(); rerenderProject(p.id);
+          }));
+        });
+        box.appendChild(pick);
+      }
+      var r = el("div", "btns");
+      r.appendChild(btn("Open Character library", "small", function () { go("#/characters"); }));
+      box.appendChild(r);
+      return box;
+    }
+
+    /* --- request box shared by both helpers --- */
+    function requestBox(buildFn, warnFn, label) {
+      var wrap = el("div");
+      var ta = el("textarea", "prompt");
+      ta.readOnly = true;
+      ta.rows = 12;
+      var warn = el("div", "hint st-review");
+      var stat = el("div", "hint");
+      wrap.appendChild(field(label, ta));
+      wrap.appendChild(warn);
+      wrap.appendChild(stat);
+      var row = el("div", "btns");
+      row.appendChild(btn("Copy request", "primary", function () { copyText(ta.value, ta, "Request copied. Paste it into your AI chat tool."); }));
+      wrap.appendChild(row);
+      function refresh() {
+        var t = buildFn();
+        ta.value = t;
+        warn.textContent = warnFn() || "";
+        stat.textContent = "Ready: " + t.length.toLocaleString() + " characters (about " + wordCount(t).toLocaleString() + " words). It updates as you change the options above.";
+      }
+      refresh();
+      return { box: wrap, refresh: refresh };
+    }
+
+    /* --- Script helper --- */
+    var ps1 = sec("scriptAI", "Script helper (manual request builder)", false);
+    ps1.appendChild(manualNote());
+    var hCh = channelSelect(p.channelId, false);
+    hCh.addEventListener("change", function () { p.channelId = hCh.value; queueSave(p); channelChanged(); });
+    ps1.appendChild(field("YouTube channel", hCh));
+    ideaB = textArea(p.idea, 4, LIMITS.idea);
+    ideaB.addEventListener("input", function () { p.idea = ideaB.value; ideaA.value = p.idea; touch(); refreshReqs(); });
+    ps1.appendChild(field("Video idea", ideaB));
+    var toneOpts = [["", "Choose a tone..."]].concat(TONES.map(function (t) { return [t, t]; }));
+    if (p.tone && TONES.indexOf(p.tone) < 0) { toneOpts.push([p.tone, p.tone]); }
+    var toneSel = selectEl(toneOpts, p.tone);
+    toneSel.addEventListener("change", function () { p.tone = toneSel.value; queueSave(p); refreshReqs(); });
+    ps1.appendChild(field("Tone", toneSel));
+    var durSel = selectEl(DURATIONS, p.duration);
+    durSel.addEventListener("change", function () { p.duration = durSel.value; queueSave(p); refreshReqs(); });
+    ps1.appendChild(field("Video length", durSel));
+    var fmtSel = selectEl([["short", "YouTube Short (vertical 9:16)"], ["long", "Standard video (horizontal 16:9)"]], p.format);
+    fmtSel.addEventListener("change", function () { p.format = fmtSel.value; queueSave(p); refreshReqs(); });
+    ps1.appendChild(field("Format", fmtSel));
+    ps1.appendChild(charPicker());
+    var notesIn = textArea(p.assistNotes, 3, LIMITS.notes);
+    notesIn.addEventListener("input", function () { p.assistNotes = notesIn.value; queueSave(p); refreshReqs(); });
+    ps1.appendChild(field("Extra instructions (optional)", notesIn));
+    reqS = requestBox(function () { return buildScriptPrompt(p); }, function () {
+      return (p.idea.trim() || p.description.trim()) ? "" : "Add a video idea above first. The request has a placeholder where the idea goes.";
+    }, "Your script request (read-only)");
+    ps1.appendChild(reqS.box);
+
+    ps1.appendChild(el("h3", "", "Paste the script back"));
+    ps1.appendChild(hint("Paste the AI's reply, then put it into this project's script."));
+    var pasteS = textArea("", 6, LIMITS.paste);
+    pasteS.setAttribute("placeholder", "Paste the AI's script here...");
+    ps1.appendChild(field("Generated script", pasteS));
+    var tidyOn = true;
+    ps1.appendChild(checkRow("Tidy the pasted text (remove ``` fences and ** bold marks)", true, function (v) { tidyOn = v; }));
+    function applyScript(mode) {
+      var t = tidyOn ? tidyText(pasteS.value) : pasteS.value.trim();
+      if (!t) { toast("Paste the script first."); pasteS.focus(); return; }
+      if (mode === "replace") {
+        if (p.script.trim() && !confirm("Replace the current script? The old one is kept, and you can swap back.")) { return; }
+        if (p.script.trim()) { p.prevScript = p.script; }
+        p.script = t.slice(0, LIMITS.script);
+      } else {
+        p.script = ((p.script.trim() ? p.script.replace(/\s+$/, "") + "\n\n" : "") + t).slice(0, LIMITS.script);
+      }
+      p.updated = nowISO();
+      if (flushSave()) { toast(mode === "replace" ? "Script replaced. Find it in Script workspace." : "Added to the end of the script."); }
+      rerenderProject(p.id);
+    }
+    var prow = el("div", "btns");
+    prow.appendChild(btn("Use as the script (replace)", "primary", function () { applyScript("replace"); }));
+    prow.appendChild(btn("Add to end of script", "", function () { applyScript("add"); }));
+    if (p.prevScript) {
+      prow.appendChild(btn("Swap with previous script", "", function () {
+        var t = p.script; p.script = p.prevScript; p.prevScript = t;
+        p.updated = nowISO(); flushSave(); toast("Swapped with the previous script."); rerenderProject(p.id);
+      }));
+    }
+    ps1.appendChild(prow);
+    app.appendChild(ps1);
+
+    /* --- Script workspace --- */
+    var ps = sec("script", "Script workspace", true);
+    ps.appendChild(hint("Write or paste your script here. It saves automatically in this browser."));
+    var sc = textArea(p.script, 14, LIMITS.script, "script");
+    sc.setAttribute("spellcheck", "true");
+    var count = el("div", "hint");
+    function updCount() {
+      var w = wordCount(sc.value);
+      count.textContent = w + " words, about " + Math.round(w / 150 * 60) + " seconds spoken at roughly 150 words per minute.";
+    }
+    sc.addEventListener("input", function () { p.script = sc.value; touch(); updCount(); if (reqN) { reqN.refresh(); } });
+    updCount();
+    ps.appendChild(sc);
+    ps.appendChild(count);
+    var srow = el("div", "btns");
+    srow.appendChild(btn("Save script", "primary", function () {
+      p.script = sc.value; p.updated = nowISO();
+      if (flushSave()) { toast("Script saved in this browser."); }
+    }));
+    srow.appendChild(btn("Copy script", "", function () { copyText(sc.value, sc, "Script copied."); }));
+    ps.appendChild(srow);
+    app.appendChild(ps);
+
+    /* --- Scene helper --- */
+    var pn1 = sec("sceneAI", "Scene helper (manual request builder)", false);
+    pn1.appendChild(manualNote());
+    var styleIn = textArea(p.visualStyle, 3, LIMITS.style);
+    styleIn.setAttribute("placeholder", "Example: bright 3D cartoon, soft light, rounded shapes, saturated colors");
+    styleIn.addEventListener("input", function () { p.visualStyle = styleIn.value; queueSave(p); if (reqN) { reqN.refresh(); } });
+    pn1.appendChild(field("Visual style (used in every image prompt)", styleIn));
+    var cntSel = selectEl(SCENE_COUNTS.map(function (c) { return [c, c === "auto" ? "Let the AI decide" : "About " + c + " scenes"]; }), p.sceneCount);
+    cntSel.addEventListener("change", function () { p.sceneCount = cntSel.value; queueSave(p); if (reqN) { reqN.refresh(); } });
+    pn1.appendChild(field("Number of scenes", cntSel));
+    var fSel = selectEl([["json", "JSON (best for pasting back in)"], ["text", "Plain labeled text (easier to read)"]], p.sceneFormat);
+    fSel.addEventListener("change", function () { p.sceneFormat = fSel.value; queueSave(p); if (reqN) { reqN.refresh(); } });
+    pn1.appendChild(field("Reply format to ask for", fSel));
+    pn1.appendChild(charPicker());
+    reqN = requestBox(function () { return buildScenePrompt(p); }, function () {
+      return p.script.trim() ? "" : "Write or paste your script first. The request has a placeholder where the script goes.";
+    }, "Your scene request (read-only)");
+    pn1.appendChild(reqN.box);
+
+    pn1.appendChild(el("h3", "", "Paste the scenes back"));
+    pn1.appendChild(hint("Paste the AI's whole reply. I will find the scenes and show them before anything is added."));
+    var pasteN = textArea("", 6, LIMITS.paste);
+    pasteN.setAttribute("placeholder", "Paste the AI's scene reply here...");
+    pn1.appendChild(field("Generated scenes", pasteN));
+    var prevBox = el("div");
+    pn1.appendChild(prevBox);
+    var parsed = null;
+    function importScenes(mode) {
+      if (!parsed) { return; }
+      var incoming = parsed.scenes.map(function (s) {
+        var n = normScene(s);
+        n.id = uid();
+        return n;
+      });
+      if (mode === "replace") {
+        if (p.scenes.length && !confirm("Replace all " + p.scenes.length + " current scenes with these " + incoming.length + "? This cannot be undone. Download a backup first if you are unsure.")) { return; }
+        p.scenes = incoming.slice(0, LIMITS.scenes);
+      } else {
+        p.scenes = p.scenes.concat(incoming).slice(0, LIMITS.scenes);
+      }
+      p.updated = nowISO();
+      if (flushSave()) { toast(incoming.length + " scene(s) " + (mode === "replace" ? "replaced the old scenes." : "added to Scene planning.")); }
+      rerenderProject(p.id);
+    }
+    function refreshParse() {
+      prevBox.textContent = "";
+      parsed = null;
+      if (!pasteN.value.trim()) { return; }
+      var r = parseScenes(pasteN.value);
+      if (!r.scenes.length) {
+        prevBox.appendChild(el("p", "st-rejected", "I could not find any scenes in that text. Paste the AI's whole reply. It should contain SCENE 1, SCENE 2 labels, or the JSON list."));
+        return;
+      }
+      parsed = r;
+      prevBox.appendChild(el("p", "st-approved", "Found " + r.scenes.length + " scene(s) in " + r.method + " format. Nothing is added yet."));
+      var ul = el("ol", "found");
+      r.scenes.forEach(function (s) {
+        var t = s.title || (s.imagePrompt || s.narration || "").slice(0, 60);
+        ul.appendChild(el("li", "", t + (s.imagePrompt ? " (image prompt: " + s.imagePrompt.slice(0, 50) + (s.imagePrompt.length > 50 ? "..." : "") + ")" : "")));
+      });
+      prevBox.appendChild(ul);
+      var row = el("div", "btns");
+      row.appendChild(btn("Add " + r.scenes.length + " scene(s) to the end", "primary", function () { importScenes("add"); }));
+      row.appendChild(btn("Replace all current scenes", "danger", function () { importScenes("replace"); }));
+      prevBox.appendChild(row);
+    }
+    pasteN.addEventListener("input", refreshParse);
+    app.appendChild(pn1);
+
+    /* --- Scene planning --- */
+    var pn = sec("scenes", "Scene planning", true);
+    pn.appendChild(hint("Your notes for each scene. Nothing here generates images, animation, or audio."));
+    var scenesBox = el("div");
+    pn.appendChild(scenesBox);
+    renderScenes(p, scenesBox, pn._h, function () { refreshWF(); });
+    var nrow = el("div", "btns");
+    nrow.appendChild(btn("+ Add scene", "primary", function () {
+      if (p.scenes.length >= LIMITS.scenes) { toast("That is the maximum number of scenes."); return; }
+      p.scenes.push(normScene({ id: uid() }));
+      queueSave(p); flushSave();
+      renderScenes(p, scenesBox, pn._h, function () { refreshWF(); });
+      refreshWF();
+      var inputs = scenesBox.querySelectorAll("input[type=text]");
+      if (inputs.length) { inputs[inputs.length - 1].focus(); }
+    }));
+    nrow.appendChild(btn("Copy all scenes as text", "", function () {
+      if (!p.scenes.length) { toast("There are no scenes to copy."); return; }
+      copyText(scenesAsText(p), null, "All scenes copied.");
+    }));
+    pn.appendChild(nrow);
+    app.appendChild(pn);
+
+    /* --- Approval and preview --- */
+    var pa = sec("approval", "Approval and final video preview", true);
+    pa.appendChild(hint("Paste a link to the finished video, for example a private or unlisted upload or a shared file. Nothing is uploaded from here."));
+    var pv = textInput(p.previewUrl, LIMITS.url);
+    pv.setAttribute("inputmode", "url");
+    pv.setAttribute("autocapitalize", "off");
+    pv.setAttribute("placeholder", "https://...");
+    pa.appendChild(field("Final video preview link", pv));
+    var linkBox = el("div", "linkbox");
+    pa.appendChild(linkBox);
+    function updLink() {
+      linkBox.textContent = "";
+      var u = safeUrl(pv.value);
+      if (u) {
+        var a = el("a", "", "Open preview in a new tab");
+        a.href = u; a.target = "_blank"; a.rel = "noopener noreferrer";
+        linkBox.appendChild(a);
+      } else if (pv.value.trim()) {
+        linkBox.appendChild(el("span", "st-rejected", "That does not look like a web link. It needs to start with http:// or https://"));
+      } else {
+        linkBox.appendChild(el("span", "hint", "No preview link yet. You can still approve, but it is best to watch the finished video first."));
+      }
+    }
+    pv.addEventListener("input", function () { p.previewUrl = pv.value; touch(); updLink(); });
+    updLink();
+    var readyEl = el("p", "hint");
+    pa.appendChild(readyEl);
+
+    var st = status(p);
+    var arow = el("div", "btns");
+    if (p.stage !== APPROVAL) {
+      pa.appendChild(el("p", "hint", "Approval opens when this project reaches the Approval stage."));
+      arow.appendChild(btn("Move to Approval stage", "", function () { setStage(p, APPROVAL); }));
+    } else if (st === "review") {
+      pa.appendChild(el("p", "st-review", "Waiting for your approval"));
+      var yes = el("button", "act yes", "Approve");
+      yes.type = "button";
+      yes.addEventListener("click", function () { decide(p, "approved"); rerenderProject(p.id); });
+      var no = el("button", "act no", "Reject");
+      no.type = "button";
+      no.addEventListener("click", function () { decide(p, "rejected"); rerenderProject(p.id); });
+      arow.appendChild(yes);
+      arow.appendChild(no);
+    } else {
+      pa.appendChild(el("p", "st-" + st, st === "approved" ? "Approved. This is a note to yourself. To publish, upload the video manually in YouTube Studio." : "Rejected"));
+      var undo = el("button", "act undo", "Undo");
+      undo.type = "button";
+      undo.addEventListener("click", function () { decide(p, null); rerenderProject(p.id); });
+      arow.appendChild(undo);
+    }
+    pa.appendChild(arow);
+    app.appendChild(pa);
+
+    /* --- Delete --- */
+    var px = sec("delete", "Delete project", false);
+    px.appendChild(hint("Deleting removes this project from this browser. It cannot be undone unless you have a JSON backup."));
+    var xrow = el("div", "btns");
+    xrow.appendChild(btn("Delete this project", "danger", function () {
+      if (!confirm("Delete \"" + p.title + "\"? This cannot be undone unless you have a backup.")) { return; }
+      var i = state.projects.indexOf(p);
+      if (i >= 0) { state.projects.splice(i, 1); }
+      save();
+      toast("Project deleted.");
+      go("#/");
+    }));
+    px.appendChild(xrow);
+    app.appendChild(px);
+
+    /* --- Workflow drawing (needs the panels above) --- */
+    var targets = [pd, ps, pn, pn, pn, null, null, pa];
+    function openAndScroll(d) {
+      if (!d) { return; }
+      d.open = true;
+      d.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    refreshWF = function () {
+      var rows = wfRows(p);
+      wfBox.textContent = "";
+      var next = null, nextIdx = -1;
+      rows.slice(0, APPROVAL).forEach(function (r, i) { if (!next && r.state !== "done") { next = r; nextIdx = i; } });
+      var nb = el("div", "banner test");
+      if (next) {
+        nb.appendChild(el("b", "", "Next up: " + next.name + ". "));
+        nb.appendChild(document.createTextNode(next.text));
+        if (p.stage !== nextIdx) {
+          var mv = el("div", "btns");
+          mv.appendChild(btn("Move tracker to " + next.name, "small", function () { setStage(p, nextIdx); }));
+          nb.appendChild(mv);
+        }
+      } else {
+        nb.appendChild(el("b", "", "Every production step is ticked off. "));
+        nb.appendChild(document.createTextNode("Watch the finished video, then move the tracker to Approval when you are ready to decide."));
+        if (p.stage !== APPROVAL) {
+          var mv2 = el("div", "btns");
+          mv2.appendChild(btn("Move tracker to Approval", "small", function () { setStage(p, APPROVAL); }));
+          nb.appendChild(mv2);
+        }
+      }
+      wfBox.appendChild(nb);
+      rows.forEach(function (r, i) {
+        var row = el("div", "wfrow");
+        row.appendChild(el("div", "wficon " + r.state, r.state === "done" ? "✓" : r.state === "bad" ? "✕" : r.state === "part" ? "…" : String(i + 1)));
+        var body = el("div", "wfbody");
+        body.appendChild(el("div", "wfname", (i + 1) + ". " + r.name + (i === p.stage ? " (tracker is here)" : "")));
+        body.appendChild(el("div", "hint", r.text));
+        if (r.items) {
+          r.items.forEach(function (k) {
+            body.appendChild(checkRow(k.label, p.checks[k.key], function (v) { if (v) { p.checks[k.key] = true; } else { delete p.checks[k.key]; } queueSave(p); refreshWF(); }));
+          });
+          if (r.key === "pack") {
+            var auto = el("div", "check auto");
+            auto.appendChild(el("span", "", r.linkOk ? "✓ Final video preview link added (checked automatically)" : "○ Final video preview link not added yet (checked automatically)"));
+            body.appendChild(auto);
+          }
+        }
+        row.appendChild(body);
+        if (targets[i]) {
+          row.appendChild(btn("Open", "small", function () { openAndScroll(targets[i]); }));
+        }
+        wfBox.appendChild(row);
+      });
+      var done = rows.slice(0, APPROVAL).filter(function (r) { return r.state === "done"; }).length;
+      var missing = rows.slice(0, APPROVAL).filter(function (r) { return r.state !== "done"; }).map(function (r) { return r.name; });
+      readyEl.textContent = "Before you decide: " + done + " of " + APPROVAL + " production steps are ticked off" + (missing.length ? " (not finished: " + missing.join(", ") + ")" : "") + ". This is only a guide. Approving never publishes anything.";
+    };
+    refreshWF();
+
+    [["Details", pd], ["Tracker", pt], ["Workflow", pw], ["Script helper", ps1], ["Script", ps], ["Scene helper", pn1], ["Scenes", pn], ["Approval", pa]].forEach(function (j) {
+      jump.appendChild(btn(j[0], "small", function () { openAndScroll(j[1]); }));
+    });
+  }
+
+  /* ---------- View: reusable prompt library ---------- */
+  var promptFilter = "all";
+  function viewPrompts() {
+    setNav("prompts");
+    clearApp();
+    app.appendChild(el("h2", "", "Prompt library"));
+    app.appendChild(hint("Save image prompts, animation instructions and sound effects you want to reuse. In Scene planning you can save a scene's prompt here, or insert a saved prompt into any scene. Nothing here generates anything."));
+    saveEl = el("div", "savestat", "Changes save automatically in this browser.");
+    app.appendChild(saveEl);
+    var top = el("div", "btns");
+    var chips = el("div", "chips");
+    var list = el("div");
+    function draw() {
+      drawChips(chips, draw, promptFilter, function (v) { promptFilter = v; });
+      list.textContent = "";
+      var items = state.prompts.filter(function (x) { return promptFilter === "all" || !x.channelId || x.channelId === promptFilter; });
+      if (!items.length) {
+        list.appendChild(el("p", "sub", state.prompts.length ? "No saved prompts for this channel yet." : "No saved prompts yet. Tap + Add prompt, or use Save to library on a scene."));
+        return;
+      }
+      items.forEach(function (x) {
+        var card = el("div", "video");
+        var nameIn = textInput(x.name, 100);
+        nameIn.addEventListener("input", function () { x.name = nameIn.value; queueSave(x); });
+        nameIn.addEventListener("change", function () { if (!nameIn.value.trim()) { nameIn.value = "Untitled prompt"; x.name = nameIn.value; queueSave(x); } });
+        card.appendChild(field("Name", nameIn));
+        var tSel = selectEl(PROMPT_TYPES, x.type);
+        tSel.addEventListener("change", function () { x.type = tSel.value; queueSave(x); });
+        card.appendChild(field("Type", tSel));
+        var cSel = selectEl([["", "Any channel (shared)"]].concat(CHANNELS.map(function (c) { return [c.id, c.name]; })), x.channelId);
+        cSel.addEventListener("change", function () { x.channelId = cSel.value; queueSave(x); });
+        card.appendChild(field("Channel", cSel));
+        var tx = textArea(x.text, 4, LIMITS.scene);
+        tx.addEventListener("input", function () { x.text = tx.value; queueSave(x); });
+        card.appendChild(field("Prompt text", tx));
+        var row = el("div", "btns");
+        row.appendChild(btn("Copy prompt", "primary", function () { copyText(x.text, null, "Prompt copied."); }));
+        row.appendChild(btn("Delete", "danger", function () {
+          if (!confirm("Delete the prompt \"" + x.name + "\"?")) { return; }
+          state.prompts.splice(state.prompts.indexOf(x), 1);
+          save(); draw();
+        }));
+        card.appendChild(row);
+        list.appendChild(card);
+      });
+    }
+    top.appendChild(btn("+ Add prompt", "primary", function () {
+      if (state.prompts.length >= LIMITS.prompts) { toast("The prompt library is full."); return; }
+      state.prompts.unshift(normPrompt({ id: uid(), name: "New prompt", type: "image", channelId: promptFilter === "all" ? "" : promptFilter }));
+      save(); draw();
+    }));
+    app.appendChild(top);
+    app.appendChild(chips);
+    app.appendChild(list);
+    draw();
+  }
+
+  /* ---------- Views: character library ---------- */
+  function viewCharacters() {
+    setNav("chars");
+    clearApp();
+    app.appendChild(el("h2", "", "Character library"));
+    app.appendChild(hint("Describe each recurring character once. The Script helper and Scene helper paste these descriptions into your requests so characters stay consistent from episode to episode. Nothing is generated here."));
+    var top = el("div", "btns");
+    top.appendChild(btn("+ Add character", "primary", function () {
+      if (state.characters.length >= LIMITS.characters) { toast("That is the maximum number of characters."); return; }
+      var c = normCharacter({ id: uid(), name: "New character", channelId: charFilter === "all" ? "" : charFilter });
+      state.characters.unshift(c);
+      save();
+      go("#/character/" + encodeURIComponent(c.id));
+    }));
+    app.appendChild(top);
+    var chips = el("div", "chips");
+    var list = el("div");
+    app.appendChild(chips);
+    app.appendChild(list);
+    function draw() {
+      drawChips(chips, draw, charFilter, function (v) { charFilter = v; });
+      list.textContent = "";
+      var items = state.characters.filter(function (c) { return charFilter === "all" || !c.channelId || c.channelId === charFilter; });
+      if (!items.length) {
+        list.appendChild(el("p", "sub", state.characters.length ? "No characters for this channel yet." : "No characters yet. Tap + Add character to describe your first one."));
+        return;
+      }
+      items.forEach(function (c) {
+        var card = el("div", "video");
+        card.appendChild(el("div", "vtitle", c.name));
+        var meta = el("div", "meta");
+        meta.appendChild(el("span", "tag", c.channelId ? channel(c.channelId).name : "Any channel"));
+        if (c.role) { meta.appendChild(el("span", "", c.role)); }
+        card.appendChild(meta);
+        if (c.appearance) { card.appendChild(el("div", "desc", c.appearance)); }
+        var row = el("div", "btns");
+        row.appendChild(btn("Edit", "", function () { go("#/character/" + encodeURIComponent(c.id)); }));
+        row.appendChild(btn("Copy character sheet", "", function () { copyText(charSheet(c, "full"), null, "Character sheet copied."); }));
+        row.appendChild(btn("Delete", "danger", function () {
+          if (!confirm("Delete the character \"" + c.name + "\"?")) { return; }
+          state.characters.splice(state.characters.indexOf(c), 1);
+          state.projects.forEach(function (p) { var i = p.charIds.indexOf(c.id); if (i >= 0) { p.charIds.splice(i, 1); } });
+          save(); draw();
+        }));
+        card.appendChild(row);
+        list.appendChild(card);
+      });
+    }
+    draw();
+  }
+  function viewCharacter(id) {
+    var c = findCharacter(id);
+    setNav("chars");
+    clearApp();
+    if (!c) {
+      app.appendChild(el("p", "sub", "Character not found. It may have been deleted."));
+      app.appendChild(btn("Back to Character library", "primary", function () { go("#/characters"); }));
+      return;
+    }
+    app.appendChild(btn("← Character library", "", function () { go("#/characters"); }));
+    app.appendChild(el("h2", "", "Edit character"));
+    saveEl = el("div", "savestat", "Changes save automatically in this browser.");
+    app.appendChild(saveEl);
+    var form = el("div", "panel");
+    function bind(key, label, rows, max, ph) {
+      var ctl = rows ? textArea(c[key], rows, max) : textInput(c[key], max);
+      if (ph) { ctl.setAttribute("placeholder", ph); }
+      ctl.addEventListener("input", function () { c[key] = ctl.value; queueSave(c); });
+      form.appendChild(field(label, ctl));
+      return ctl;
+    }
+    var nameIn = bind("name", "Name", 0, 100);
+    nameIn.addEventListener("change", function () { if (!nameIn.value.trim()) { nameIn.value = "Unnamed character"; c.name = nameIn.value; queueSave(c); } });
+    var chOpts = [["", "Any channel (shared)"]].concat(CHANNELS.map(function (x) { return [x.id, x.name]; }));
+    var chSel = selectEl(chOpts, c.channelId);
+    if (c.channelId && !CHANNELS.some(function (x) { return x.id === c.channelId; })) {
+      var u = el("option", "", c.channelId + " (unknown channel)"); u.value = c.channelId; chSel.appendChild(u); chSel.value = c.channelId;
+    }
+    chSel.addEventListener("change", function () { c.channelId = chSel.value; queueSave(c); });
+    form.appendChild(field("Channel", chSel));
+    bind("role", "Role or species", 0, 200, "Example: the clever leader of the group");
+    bind("appearance", "Appearance (the look to keep identical in every image)", 4, LIMITS.field, "Example: short round raccoon, silver-gray fur, dark mask, one bent left ear, big amber eyes");
+    bind("outfit", "Outfit and props", 3, LIMITS.field, "Example: green hoodie, tiny black backpack");
+    bind("personality", "Personality and behavior", 3, LIMITS.field, "Example: bold, curious, always has a plan that goes wrong");
+    bind("voice", "Voice and way of speaking", 3, LIMITS.field, "Example: fast, playful, short sentences, says \"Trust me\" a lot");
+    bind("rules", "Rules (always / never)", 3, LIMITS.field, "Example: never shown without the hoodie; never speaks in rhymes");
+    var urlIn = bind("imageUrl", "Reference image link (optional)", 0, LIMITS.url, "https://...");
+    urlIn.setAttribute("inputmode", "url");
+    bind("notes", "Notes", 3, LIMITS.field);
+    var lk = el("div", "linkbox");
+    form.appendChild(lk);
+    function updLk() {
+      lk.textContent = "";
+      var uu = safeUrl(c.imageUrl);
+      if (uu) { var a = el("a", "", "Open reference image in a new tab"); a.href = uu; a.target = "_blank"; a.rel = "noopener noreferrer"; lk.appendChild(a); }
+    }
+    urlIn.addEventListener("input", updLk);
+    updLk();
+    var row = el("div", "btns");
+    row.appendChild(btn("Copy character sheet", "primary", function () { copyText(charSheet(c, "full"), null, "Character sheet copied."); }));
+    row.appendChild(btn("Done", "", function () { flushSave(); go("#/characters"); }));
+    row.appendChild(btn("Delete character", "danger", function () {
+      if (!confirm("Delete the character \"" + c.name + "\"?")) { return; }
+      state.characters.splice(state.characters.indexOf(c), 1);
+      state.projects.forEach(function (p) { var i = p.charIds.indexOf(c.id); if (i >= 0) { p.charIds.splice(i, 1); } });
+      save(); toast("Character deleted."); go("#/characters");
+    }));
+    form.appendChild(row);
+    app.appendChild(form);
+  }
+
+  /* ---------- View: backup & data ---------- */
+  function exportBackup() {
+    var payload = { app: "dreamland-studios", version: 3, exportedAt: nowISO(), projects: state.projects, characters: state.characters, prompts: state.prompts };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "dreamland-backup-" + dateStr() + ".json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+    state.lastExport = nowISO();
+    save();
+    updateStorageBanner();
+    toast("Backup downloaded. Keep the file somewhere safe.");
+    if (location.hash === "#/backup") { viewBackup(); }
+  }
+  function addProjects(incoming) {
+    var used = {};
+    state.projects.forEach(function (p) { used[p.id] = true; });
+    incoming.forEach(function (p) {
+      if (used[p.id]) { p.id = uid(); }
+      used[p.id] = true;
+      state.projects.push(p);
+    });
+    if (state.projects.length > LIMITS.projects) { state.projects = state.projects.slice(0, LIMITS.projects); }
+  }
+  function importFile(mode, file) {
+    if (!file) { return; }
+    if (file.size > 8 * 1024 * 1024) { toast("That file is too large to be a DreamLand backup."); return; }
+    var r = new FileReader();
+    r.onerror = function () { toast("Could not read that file."); };
+    r.onload = function () {
+      var data;
+      try { data = JSON.parse(String(r.result)); } catch (e) { toast("That file is not valid JSON."); return; }
+      if (!data || data.app !== "dreamland-studios" || !Array.isArray(data.projects)) { toast("That does not look like a DreamLand backup file."); return; }
+      if (typeof data.version === "number" && data.version > 3) { toast("That backup was made by a newer version of DreamLand. Open it with that version."); return; }
+      var incoming = data.projects.slice(0, LIMITS.projects).map(normProject).filter(Boolean);
+      var hasChars = Array.isArray(data.characters);
+      var inChars = hasChars ? data.characters.slice(0, LIMITS.characters).map(normCharacter).filter(Boolean) : [];
+      var hasPrompts = Array.isArray(data.prompts);
+      var inPrompts = hasPrompts ? data.prompts.slice(0, LIMITS.prompts).map(normPrompt).filter(Boolean) : [];
+      if (mode === "replace") {
+        if (!confirm("Replace all " + state.projects.length + " projects in this browser with the " + incoming.length + " from the backup" + (hasChars ? " (and replace your characters with its " + inChars.length + ")" : " (your characters are kept)") + "?")) { return; }
+        state.projects = incoming;
+        if (hasChars) { state.characters = inChars; }
+        if (hasPrompts) { state.prompts = inPrompts; }
+      } else {
+        var usedC = {}, map = {};
+        state.characters.forEach(function (c) { usedC[c.id] = true; });
+        inChars.forEach(function (c) {
+          var old = c.id;
+          if (usedC[c.id]) { c.id = uid(); }
+          usedC[c.id] = true;
+          map[old] = c.id;
+          if (state.characters.length < LIMITS.characters) { state.characters.push(c); }
+        });
+        incoming.forEach(function (p) { p.charIds = p.charIds.map(function (x) { return map[x] || x; }); });
+        var usedP = {};
+        state.prompts.forEach(function (x) { usedP[x.id] = true; });
+        inPrompts.forEach(function (x) {
+          if (usedP[x.id]) { x.id = uid(); }
+          usedP[x.id] = true;
+          if (state.prompts.length < LIMITS.prompts) { state.prompts.push(x); }
+        });
+        addProjects(incoming);
+      }
+      if (save()) { toast("Imported " + incoming.length + " project(s)" + (hasChars ? " and " + inChars.length + " character(s)." : ".")); }
+      viewBackup();
+    };
+    r.readAsText(file);
+  }
+  function viewBackup() {
+    setNav("backup");
+    clearApp();
+    app.appendChild(el("h2", "", "Backup & data"));
+
+    var pw = panel("Where your projects are stored");
+    var ul = el("ul", "list");
+    [
+      "Your projects are saved in this browser's localStorage, on this device, for this website address only.",
+      "localStorage is not cloud storage. Nothing is uploaded anywhere.",
+      "It will not automatically sync between devices. Projects you make on your MacBook will not appear on your iPhone, and the reverse.",
+      "Different browsers on the same device do not share it either (for example Firefox and Safari).",
+      "Clearing browsing or website data, or using a private window, can erase it.",
+      "This v0.3 page keeps its own copy of your data. Your live v0.2 dashboard has separate data that this page never changes.",
+      "To move or protect your work, download a JSON backup and import it where you need it."
+    ].forEach(function (t) { ul.appendChild(el("li", "", t)); });
+    pw.appendChild(ul);
+    var size = Math.round(JSON.stringify(state).length / 1024);
+    pw.appendChild(el("p", "hint", state.projects.length + " project(s), " + state.characters.length + " character(s), " + state.prompts.length + " saved prompt(s), about " + size + " KB. Last backup: " + fmtDate(state.lastExport) + "."));
+    app.appendChild(pw);
+
+    var pe = panel("Export a backup");
+    pe.appendChild(hint("Downloads all your projects, characters and saved prompts as one JSON file. On iPhone, if the file opens as text, tap the Share button and choose Save to Files."));
+    var erow = el("div", "btns");
+    erow.appendChild(btn("Download backup (.json)", "primary", exportBackup));
+    pe.appendChild(erow);
+    app.appendChild(pe);
+
+    var pi = panel("Import a backup");
+    pi.appendChild(hint("Choose a DreamLand backup file (v0.2 and v0.3 backups both work). Replace swaps the projects in this browser for the file's contents. Add keeps what you have and adds the file's projects as new copies."));
+    var fileIn = el("input");
+    fileIn.type = "file";
+    fileIn.accept = ".json,application/json";
+    fileIn.style.display = "none";
+    var importMode = "replace";
+    fileIn.addEventListener("change", function () {
+      var f = fileIn.files && fileIn.files[0];
+      importFile(importMode, f);
+      fileIn.value = "";
+    });
+    pi.appendChild(fileIn);
+    var irow = el("div", "btns");
+    irow.appendChild(btn("Import and replace everything", "", function () { importMode = "replace"; fileIn.click(); }));
+    irow.appendChild(btn("Import and add to existing", "", function () { importMode = "add"; fileIn.click(); }));
+    pi.appendChild(irow);
+    app.appendChild(pi);
+
+    var v2 = readV2();
+    var p2 = panel("Copy projects from your live v0.2 dashboard");
+    p2.appendChild(hint("This page only reads your v0.2 data. It never changes it. " + (v2 ? "Found " + v2.length + " project(s) in v0.2." : "No v0.2 data was found in this browser.")));
+    var r2 = el("div", "btns");
+    r2.appendChild(btn("Add v0.2 projects as new copies", "", function () {
+      var inc = readV2();
+      if (!inc || !inc.length) { toast("No v0.2 projects found in this browser."); return; }
+      addProjects(inc);
+      if (save()) { toast("Copied " + inc.length + " project(s) from v0.2."); }
+      viewBackup();
+    }));
+    r2.appendChild(btn("Replace my v0.3 projects with v0.2's", "danger", function () {
+      var inc = readV2();
+      if (!inc || !inc.length) { toast("No v0.2 projects found in this browser."); return; }
+      if (!confirm("Replace all " + state.projects.length + " projects on this test page with the " + inc.length + " from v0.2? Your characters are kept.")) { return; }
+      state.projects = inc;
+      if (save()) { toast("Replaced with " + inc.length + " project(s) from v0.2."); }
+      viewBackup();
+    }));
+    p2.appendChild(r2);
+    app.appendChild(p2);
+
+    var pc = panel("Clean up");
+    pc.appendChild(hint("Download a backup first if you might want anything back."));
+    var crow = el("div", "btns");
+    var samples = state.projects.filter(function (p) { return p.sample; }).length;
+    crow.appendChild(btn("Delete sample projects (" + samples + ")", "danger", function () {
+      if (!samples) { toast("There are no sample projects."); return; }
+      if (!confirm("Delete the " + samples + " sample project(s)? Your own projects are not touched.")) { return; }
+      state.projects = state.projects.filter(function (p) { return !p.sample; });
+      save(); toast("Sample projects deleted."); viewBackup();
+    }));
+    crow.appendChild(btn("Delete ALL projects", "danger", function () {
+      if (!state.projects.length) { toast("There are no projects."); return; }
+      if (!confirm("Delete all " + state.projects.length + " projects from this browser? This cannot be undone.")) { return; }
+      if (!confirm("Last check: are you sure? Download a backup first if you are not.")) { return; }
+      state.projects = [];
+      save(); toast("All projects deleted."); viewBackup();
+    }));
+    pc.appendChild(crow);
+    app.appendChild(pc);
+  }
+
+  /* ---------- Start ---------- */
+  window.addEventListener("hashchange", route);
+  window.addEventListener("pagehide", function () { if (saveTimer) { flushSave(); } });
+  document.addEventListener("visibilitychange", function () { if (document.hidden && saveTimer) { flushSave(); } });
+
+  save();
+  updateStorageBanner();
+  route();
+  if (copiedFromV2) { toast("Copied " + copiedFromV2 + " project(s) from your v0.2 dashboard. v0.2 itself was not changed."); }
+})();
+</script>
+</body>
+</html>
